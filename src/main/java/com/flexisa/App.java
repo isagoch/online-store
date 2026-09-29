@@ -13,6 +13,8 @@ public class App
         double discount = 0.0;
         String delivery_message = "";
         double delivery_fee = 0.0;
+        double tax = 0.0;
+        double fee = 0.0;
 
         // validate input
         if(price > 0 && quantity > 0 && location != null && location.matches("[A-Za-z]+")) {
@@ -45,10 +47,20 @@ public class App
                 delivery_fee = 3000;
             }
 
+    
             //calculate and display the discounted price
             double discounted_total = subtotal - discount;
+
+            // Implement the tax logic
+            tax = discounted_total * 0.02;
+
+            // Calculate the total fee including discounted_total, delivery_fee and tax
+            fee = discounted_total + delivery_fee + tax;
+
             JOptionPane.showMessageDialog(null, "Discounted Total for " + location + ": $" + String.format("%.2f", discounted_total));
             JOptionPane.showMessageDialog(null, delivery_message + " Delivery fee: $" + String.format("%.2f", delivery_fee));
+            JOptionPane.showMessageDialog(null, "Tax: $" + String.format("%.2f", tax));
+            JOptionPane.showMessageDialog(null, "Total Fee: $" + String.format("%.2f", fee));
         } else {
             JOptionPane.showMessageDialog(null, "Invalid input. Please enter valid values.");
         }
