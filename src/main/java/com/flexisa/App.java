@@ -12,33 +12,36 @@ public class App
         int quantity = Integer.parseInt(JOptionPane.showInputDialog("Enter quantity:"));
         String location = JOptionPane.showInputDialog("Enter location:");
 
+    try {
         // validate input
-        if(price > 0 && quantity > 0 && location != null && location.matches("[A-Za-z]+")) {
-            //calculate subtotal
-            double subtotal = OrderPricing.calculateSubtotal(price, quantity);
+        OrderPricing.validateOrder(price, quantity, location);
 
-            //calculate discount
-            double discount = OrderPricing.calculateDiscount(subtotal, quantity);
+        // calculate subtotal
+        double subtotal = OrderPricing.calculateSubtotal(price, quantity);
+
+        // calculate discount
+        double discount = OrderPricing.calculateDiscount(subtotal, quantity);
 
             //Implement the delivery Logic
-            double delivery_fee = OrderPricing.calculateDeliveryFee(subtotal, location);
+        double delivery_fee = OrderPricing.calculateDeliveryFee(subtotal, location);
 
             //calculate and display the discounted price
-            double discounted_total = OrderPricing.calculateDiscountedTotal(subtotal, discount);
+        double discounted_total = OrderPricing.calculateDiscountedTotal(subtotal, discount);
 
             // Implement the tax logic
-            double tax = OrderPricing.calculateTax(discounted_total);
+        double tax = OrderPricing.calculateTax(discounted_total);
 
             // Calculate the total fee including discounted_total, delivery_fee and tax
-            double fee = OrderPricing.calculateTotalFee(discounted_total, delivery_fee, tax);
+        double fee = OrderPricing.calculateTotalFee(discounted_total, delivery_fee, tax);
 
-            JOptionPane.showMessageDialog(null, "Discounted Total for " + location + ": $" + String.format("%.2f", discounted_total));
-            JOptionPane.showMessageDialog(null, " Delivery fee: $" + String.format("%.2f", delivery_fee));
-            JOptionPane.showMessageDialog(null, "Tax: $" + String.format("%.2f", tax));
-            JOptionPane.showMessageDialog(null, "Total Fee: $" + String.format("%.2f", fee));
-        } else {
-            JOptionPane.showMessageDialog(null, "Invalid input. Please enter valid values.");
-        }
-        
+        JOptionPane.showMessageDialog(null, "Discounted Total for " + location + ": #" + String.format("%.2f", discounted_total));
+        JOptionPane.showMessageDialog(null, " Delivery fee: #" + String.format("%.2f", delivery_fee));
+        String taxMessage = "Tax: #" + String.format("%.2f", tax);
+        JOptionPane.showMessageDialog(null, taxMessage);
+        JOptionPane.showMessageDialog(null, "Total Fee: #" + String.format("%.2f", fee));
+    }
+    catch (IllegalArgumentException e) {
+        JOptionPane.showMessageDialog(null, e.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+    }
     }
 }
