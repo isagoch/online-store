@@ -4,7 +4,7 @@ import javax.swing.JOptionPane;
 
 public class App 
 {
-
+    //Method to calculae the discount 
     public static double calculateDiscount(double subtotal, int quantity) {
                 if(quantity >= 25 && quantity < 50){
                 return subtotal * 0.05;
@@ -20,8 +20,7 @@ public class App
                 }
 
 }
-
-
+    //Method to calculate the delivery fee
     public static double calculateDeliveryFee(double subtotal, String location) {
                     if(subtotal >= 100000){
                     return 0.0;
@@ -34,9 +33,28 @@ public class App
                     }
     }
 
+    //Method to calculate the tax
     public static double calculateTax(double discounted_total){
                     return discounted_total * 0.02;
 }
+
+    //Method to calculate the subtotal
+    public static double calculateSubtotal(double price, int quantity) {
+                    return price * quantity;
+
+    }
+    //Method to calculate the total fee
+    public static double calculateTotalFee(double discounted_total, double delivery_fee, double tax) {
+                    return discounted_total + delivery_fee + tax;
+    }
+    
+    //Method to calculate the discounted total
+    public static double calculateDiscountedTotal(double subtotal, double discount) {
+                    return subtotal - discount;
+    }
+
+
+
     public static void main( String[] args )
     {
         // prompt the user to input the price, quantity and location
@@ -49,7 +67,7 @@ public class App
         // validate input
         if(price > 0 && quantity > 0 && location != null && location.matches("[A-Za-z]+")) {
             //calculate subtotal
-            double subtotal = price * quantity;
+            double subtotal = calculateSubtotal(price, quantity);
 
             //calculate discount
             double discount = calculateDiscount(subtotal, quantity);
@@ -58,13 +76,13 @@ public class App
             double delivery_fee = calculateDeliveryFee(subtotal, location);
 
             //calculate and display the discounted price
-            double discounted_total = subtotal - discount;
+            double discounted_total = calculateDiscountedTotal(subtotal, discount);
 
             // Implement the tax logic
             tax = calculateTax(discounted_total);
 
             // Calculate the total fee including discounted_total, delivery_fee and tax
-            fee = discounted_total + delivery_fee + tax;
+            fee = calculateTotalFee(discounted_total, delivery_fee, tax);
 
             JOptionPane.showMessageDialog(null, "Discounted Total for " + location + ": $" + String.format("%.2f", discounted_total));
             JOptionPane.showMessageDialog(null, " Delivery fee: $" + String.format("%.2f", delivery_fee));
