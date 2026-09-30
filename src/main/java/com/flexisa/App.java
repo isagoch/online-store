@@ -1,6 +1,6 @@
 package com.flexisa;
 
-import javax.swing.JOptionPane;
+import java.util.Scanner;
 
 public class App 
 {
@@ -8,11 +8,14 @@ public class App
     public static void main( String[] args )
     {
         // prompt the user to input the price, quantity and location
-        double price = Double.parseDouble(JOptionPane.showInputDialog("Enter price:"));
-        int quantity = Integer.parseInt(JOptionPane.showInputDialog("Enter quantity:"));
-        String location = JOptionPane.showInputDialog("Enter location:");
+        try (Scanner scanner = new Scanner(System.in)) {
+        System.out.print("Enter the price of the item: ");
+        double price = Double.parseDouble(scanner.nextLine());
+        System.out.print("Enter the quantity of the item: ");
+        int quantity = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter the location: ");
+        String location = scanner.nextLine();
 
-    try {
         // validate input
         OrderPricing.validateOrder(price, quantity, location);
 
@@ -34,14 +37,18 @@ public class App
             // Calculate the total fee including discounted_total, delivery_fee and tax
         double fee = OrderPricing.calculateTotalFee(discounted_total, delivery_fee, tax);
 
-        JOptionPane.showMessageDialog(null, "Discounted Total for " + location + ": #" + String.format("%.2f", discounted_total));
-        JOptionPane.showMessageDialog(null, " Delivery fee: #" + String.format("%.2f", delivery_fee));
-        String taxMessage = "Tax: #" + String.format("%.2f", tax);
-        JOptionPane.showMessageDialog(null, taxMessage);
-        JOptionPane.showMessageDialog(null, "Total Fee: #" + String.format("%.2f", fee));
+        System.out.println("Discounted Total for " + location + ": #" + String.format("%.2f", discounted_total));
+        System.out.println("Delivery fee: #" + String.format("%.2f", delivery_fee));
+        System.out.println("Tax: #" + String.format("%.2f", tax));
+        System.out.println("Total Fee: #" + String.format("%.2f", fee));
+    }
+
+    catch (NumberFormatException e) {
+            System.err.println("Input Error: Please enter valid numeric values for price and quantity.");
     }
     catch (IllegalArgumentException e) {
-        JOptionPane.showMessageDialog(null, e.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+            System.err.println("Input Error: " + e.getMessage());
     }
+
     }
 }
