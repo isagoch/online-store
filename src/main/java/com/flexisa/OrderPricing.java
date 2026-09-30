@@ -1,7 +1,7 @@
 package com.flexisa;
 
 public class OrderPricing {
-        //Method to calculae the discount 
+    //Method to calculae the discount 
     public static double calculateDiscount(double subtotal, int quantity) {
                 if(quantity >= 25 && quantity < 50){
                 return subtotal * 0.05;
@@ -17,6 +17,30 @@ public class OrderPricing {
                 }
 
 }
+    //Calculate discount for high-value orders
+    public static double calculateHighValueDiscount(double subtotal) {
+        if (subtotal >= 200000) {
+        return subtotal * 0.03;
+        }
+        else {
+        return 0.0;
+        }
+}
+    //Calculate discount based on promocode
+    public static double calculatePromoDiscount(double subtotal, String promoCode){
+        if (promoCode != null && promoCode.trim().equalsIgnoreCase("FLEXISAF")) {
+            return subtotal * 0.05;
+        }
+        else if (promoCode != null && promoCode.trim().equalsIgnoreCase("FLEXISA10")) {
+            return subtotal * 0.10;
+        }
+        else if (promoCode != null && promoCode.trim().equalsIgnoreCase("FLEXISA15")) {
+            return subtotal * 0.15;
+        }
+        else {
+            return 0.0;
+        }
+    }
     //Method to calculate the delivery fee
     public static double calculateDeliveryFee(double subtotal, String location) {
                     if(subtotal >= 100000){

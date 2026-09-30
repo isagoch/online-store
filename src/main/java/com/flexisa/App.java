@@ -11,10 +11,15 @@ public class App
         try (Scanner scanner = new Scanner(System.in)) {
         System.out.print("Enter the price of the item: ");
         double price = Double.parseDouble(scanner.nextLine());
+
         System.out.print("Enter the quantity of the item: ");
         int quantity = Integer.parseInt(scanner.nextLine());
+
         System.out.print("Enter the location: ");
         String location = scanner.nextLine();
+
+        System.out.print("Enter the promo code (if any): ");
+        String promoCode = scanner.nextLine();
 
         // validate input
         OrderPricing.validateOrder(price, quantity, location);
@@ -23,13 +28,17 @@ public class App
         double subtotal = OrderPricing.calculateSubtotal(price, quantity);
 
         // calculate discount
-        double discount = OrderPricing.calculateDiscount(subtotal, quantity);
+        // calculate discounts
+        double quantityDiscount = OrderPricing.calculateDiscount(subtotal, quantity);
+        double highValueDiscount = OrderPricing.calculateHighValueDiscount(subtotal);
+        double promoDiscount = OrderPricing.calculatePromoDiscount(subtotal, promoCode);
+        double totalDiscount = quantityDiscount + highValueDiscount + promoDiscount;
 
             //Implement the delivery Logic
         double delivery_fee = OrderPricing.calculateDeliveryFee(subtotal, location);
 
             //calculate and display the discounted price
-        double discounted_total = OrderPricing.calculateDiscountedTotal(subtotal, discount);
+        double discounted_total = OrderPricing.calculateDiscountedTotal(subtotal, totalDiscount);
 
             // Implement the tax logic
         double tax = OrderPricing.calculateTax(discounted_total);
