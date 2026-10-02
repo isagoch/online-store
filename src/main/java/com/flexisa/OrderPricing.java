@@ -3,27 +3,27 @@ package com.flexisa;
 public class OrderPricing {
     //Method to calculae the discount 
     public static double calculateDiscount(double subtotal, int quantity) {
-                if(quantity >= 25 && quantity < 50){
-                return subtotal * 0.05;
-                }
-                else if(quantity >= 50 && quantity < 100){
-                return subtotal * 0.10;
-                }
-                else if(quantity >= 100){
-                return subtotal * 0.15;
-                }
-                else{
-                    return 0.0;
-                }
+        if(quantity >= 25 && quantity < 50){
+            return subtotal * 0.05;
+        }
+        else if(quantity >= 50 && quantity < 100){
+            return subtotal * 0.10;
+        }
+        else if(quantity >= 100){
+            return subtotal * 0.15;
+        }
+        else {
+            return 0.0;
+        }
 
 }
     //Calculate discount for high-value orders
     public static double calculateHighValueDiscount(double subtotal) {
         if (subtotal >= 200000) {
-        return subtotal * 0.03;
+            return subtotal * 0.03;
         }
         else {
-        return 0.0;
+            return 0.0;
         }
 }
     //Calculate discount based on promocode
@@ -43,15 +43,15 @@ public class OrderPricing {
     }
     //Method to calculate the delivery fee
     public static double calculateDeliveryFee(double subtotal, String location) {
-                    if(subtotal >= 100000){
-                    return 0.0;
-                    }
-                    else if(location.toUpperCase().equals("LAGOS")) {
-                    return 1500;
-                    }
-                    else{
-                    return 3000;
-                    }
+        if(subtotal >= 100000){
+            return 0.0;
+        }
+        else if(location.toUpperCase().equals("LAGOS")) {
+            return 1500;
+        }
+        else {
+            return 3000;
+        }
     }
 
     //Method to calculate the tax
