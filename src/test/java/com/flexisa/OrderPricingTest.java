@@ -15,4 +15,16 @@ public class OrderPricingTest {
         assertEquals(276000, discountedTotal, 0.01);
         
     }
+
+    @Test
+    void calculateDiscountedTotal_WithPromoCode_Returns246000() {
+        double subtotal = OrderPricing.calculateSubtotal(10000, 30);
+        double quantityDiscount = OrderPricing.calculateDiscount(subtotal, 30);
+        double highValueDiscount = OrderPricing.calculateHighValueDiscount(subtotal);
+        String promoCode = "FLEXISA10";
+        double promoDiscount = OrderPricing.calculatePromoDiscount(subtotal, promoCode);
+        double totalDiscount = quantityDiscount + highValueDiscount + promoDiscount;
+        double discountedTotal = OrderPricing.calculateDiscountedTotal(subtotal, totalDiscount);
+        assertEquals(246000, discountedTotal, 0.01);
+    }
 }
