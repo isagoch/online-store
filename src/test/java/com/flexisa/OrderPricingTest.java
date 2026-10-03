@@ -44,4 +44,12 @@ public class OrderPricingTest {
         });
         assertEquals("Please input a price greater than zero", exception.getMessage());
     }
+
+    @Test
+    void validateOrder_WithEmptyLocation_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            OrderPricing.validateOrder(10000, 5, "");
+        });
+        assertEquals("Please input a valid location", exception.getMessage());
+    }
 }
