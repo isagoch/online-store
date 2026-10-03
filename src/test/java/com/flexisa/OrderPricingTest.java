@@ -36,4 +36,12 @@ public class OrderPricingTest {
         });
         assertEquals("Please input quantity greater than zero", exception.getMessage());
     }
+
+    @Test
+    void validateOrder_WithZeroPrice_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            OrderPricing.validateOrder(0, 5, "Lagos");
+        });
+        assertEquals("Please input a price greater than zero", exception.getMessage());
+    }
 }
