@@ -52,4 +52,16 @@ public class OrderPricingTest {
         });
         assertEquals("Please input a valid location", exception.getMessage());
     }
+
+    @Test
+    void calculateDiscount_withQuantity24_Returns0() {
+        double discount = OrderPricing.calculateDiscount(100000, 24);
+        assertEquals(0, discount, 0.01);
+    }
+
+    @Test
+    void calculateDiscount_withQuantity25_Returns5000() {
+        double discount = OrderPricing.calculateDiscount(100000, 25);
+        assertEquals(5000, discount, 0.01);
+    }
 }
