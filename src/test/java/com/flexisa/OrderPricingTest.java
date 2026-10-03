@@ -64,4 +64,10 @@ public class OrderPricingTest {
         double discount = OrderPricing.calculateDiscount(100000, 25);
         assertEquals(5000, discount, 0.01);
     }
+
+    @Test
+    void calculateHighValueDiscount_withSubtotal200000_Returns6000() {
+        double discount = OrderPricing.calculateHighValueDiscount(200000);
+        assertEquals(6000, discount, 0.01);
+    }
 }
