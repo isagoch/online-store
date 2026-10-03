@@ -70,4 +70,10 @@ public class OrderPricingTest {
         double discount = OrderPricing.calculateHighValueDiscount(200000);
         assertEquals(6000, discount, 0.01);
     }
+
+    @Test
+    void calculateDeliveryFee_withSubtotal50000AndLocationLagos_Returns1500() {
+        double deliveryFee = OrderPricing.calculateDeliveryFee(50000, "Lagos ");
+        assertEquals(1500, deliveryFee, 0.01);
+    }
 }
