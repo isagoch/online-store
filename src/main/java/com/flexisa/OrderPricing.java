@@ -46,7 +46,7 @@ public class OrderPricing {
         if(subtotal >= 100000){
             return 0.0;
         }
-        else if(location.toUpperCase().equals("LAGOS")) {
+        else if(location.toUpperCase().trim().equals("LAGOS")) {
             return 1500;
         }
         else {
