@@ -1,4 +1,4 @@
-package model;
+package com.flexisa.model;
 
 public enum DeliveryStatus {
     PENDING,
