@@ -33,6 +33,36 @@ public class Order {
         this.items.add(item);
     }
 
+    public void startProcessing() {
+        if (status != OrderStatus.PENDING) {
+            throw new IllegalStateException("Order can only start processing when its status is PENDING");
+        }
+        if (items.isEmpty()) {
+            throw new IllegalStateException("Order must contain at least one item before processing");
+        }
+        status = OrderStatus.PROCESSING;
+    }
+
+    public void ship() {
+        if (status != OrderStatus.PROCESSING) {
+            throw new IllegalStateException("Order can only be shipped when its status is PROCESSING");
+        }
+        status = OrderStatus.SHIPPED;
+    }
+    public void deliver() {
+        if (status != OrderStatus.SHIPPED) {
+            throw new IllegalStateException("Order can only be delivered when its status is SHIPPED");
+        }
+        status = OrderStatus.DELIVERED;
+    }
+    public void cancel() {
+        boolean canCancel = status == OrderStatus.PENDING || status == OrderStatus.PROCESSING;
+        if (!canCancel) {
+            throw new IllegalStateException("Only PENDING or PROCESSING orders can be cancelled");
+        }
+        status = OrderStatus.CANCELLED;
+    }
+
     public List<OrderItem> getItems() {
         return new ArrayList<>(items);
     }
