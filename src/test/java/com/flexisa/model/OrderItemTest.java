@@ -1,5 +1,7 @@
 package com.flexisa.model;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 public class OrderItemTest {
@@ -8,8 +10,8 @@ public class OrderItemTest {
         Product product = new Product("1", "Test Product", 10.0, 100);
         OrderItem orderItem = new OrderItem(product, 5);
         assertNotNull(orderItem);
-        orderItem.product();
-        orderItem.quantity();
+        assertEquals(product, orderItem.product());
+        assertEquals(5, orderItem.quantity());
     }
 
     @Test
