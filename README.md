@@ -23,3 +23,28 @@ The app asks for price, quantity, location, and promo code. See `SAMPLE_RUNS.md`
 
 ## Running the tests
 Run `mvn test`. The screenshot is at `docs/test-results.png`.
+
+## Domain model (Week 2)
+The `com.flexisa.model` package models an e-commerce order system. The code is in `src/main/java/com/flexisa/model/` and the tests are in `src/test/java/com/flexisa/model/`.
+
+### Types
+- **Records (immutable):** `Address`, `OrderItem`
+- **Classes (entities with changing state):** `Customer`, `Product`, `Order`, `Payment`, `Delivery`
+- **Enums (fixed states):** `OrderStatus`, `PaymentStatus`, `DeliveryStatus`
+
+### Relationships
+- A `Customer` has one `Address`.
+- An `Order` is placed by one `Customer` and contains many `OrderItem`s.
+- An `OrderItem` refers to one `Product` and has a quantity.
+- A `Payment` is for one `Order`.
+- A `Delivery` is for one `Order` and ships to one `Address`.
+
+### Rules
+- Invalid input throws `IllegalArgumentException`.
+- An action the current state does not allow throws `IllegalStateException`.
+- Orders, payments and deliveries start as PENDING and can only change status through methods with rules (for example, an order cannot be shipped before it is processing).
+
+### More details
+- Class diagram: `docs/class-diagram.md`
+- Design decisions: `docs/design-decisions.md`
+- Run the model tests with `mvn test`.
