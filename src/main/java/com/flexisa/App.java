@@ -35,6 +35,13 @@ public class App {
             new StandardShippingCalculator());
     }
 
+    private static void printSummary(String location, double discountedTotal, double deliveryFee, double tax, double fee) {
+    System.out.println("Discounted Total for " + location + ": #" + String.format("%.2f", discountedTotal));
+    System.out.println("Delivery fee: #" + String.format("%.2f", deliveryFee));
+    System.out.println("Tax: #" + String.format("%.2f", tax));
+    System.out.println("Total Fee: #" + String.format("%.2f", fee));
+    }
+
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
             double price = readDouble(scanner, "Enter the price of the item: ");
@@ -43,7 +50,7 @@ public class App {
             String promoCode = readString(scanner, "Enter the promo code (if any): ");
 
             OrderInputValidator.validateOrder(price, quantity, location);
-            
+
             double subtotal = price * quantity;
             PricingContext context = new PricingContext(subtotal, quantity, promoCode, location);
             PricingService pricingService = createPricingService();
@@ -53,10 +60,9 @@ public class App {
             double tax = pricingService.calculateTax(context);
             double fee = pricingService.calculateTotalFee(context);
 
-            System.out.println("Discounted Total for " + location + ": #" + String.format("%.2f", discountedTotal));
-            System.out.println("Delivery fee: #" + String.format("%.2f", deliveryFee));
-            System.out.println("Tax: #" + String.format("%.2f", tax));
-            System.out.println("Total Fee: #" + String.format("%.2f", fee));
+            printSummary(location, discountedTotal, deliveryFee, tax, fee);
+
+            
         } catch (NumberFormatException e) {
             System.err.println("Input Error: Please enter valid numeric values for price and quantity.");
         } catch (IllegalArgumentException e) {

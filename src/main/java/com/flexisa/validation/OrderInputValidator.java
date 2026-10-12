@@ -16,4 +16,5 @@ public final class OrderInputValidator {
             throw new IllegalArgumentException("Please input a valid location");
         }
     }
+    
 }
