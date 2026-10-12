@@ -13,4 +13,12 @@ public class PricingService {
         this.discountPolicies = List.copyOf(discountPolicies);
         this.shippingCalculator = shippingCalculator;
     }
+
+    public double calculateTotalDiscount(PricingContext context) {
+        double total = 0;
+        for (DiscountPolicy policy : discountPolicies) {
+            total += policy.calculateDiscount(context);
+        }
+        return total;
+    }
 }
