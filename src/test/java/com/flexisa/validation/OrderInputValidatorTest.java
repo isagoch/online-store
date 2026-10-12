@@ -56,6 +56,14 @@ class OrderInputValidatorTest {
     }
 
     @Test
+    void validateOrder_WithEmptyLocation_ThrowsException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> OrderInputValidator.validateOrder(100, 1, ""));
+        assertEquals("Please input a valid location", exception.getMessage());
+    }
+
+    @Test
     void validateOrder_WithValidInput_DoesNotThrow() {
         assertDoesNotThrow(() -> OrderInputValidator.validateOrder(100, 1, "Lagos"));
     }
