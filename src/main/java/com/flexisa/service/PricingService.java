@@ -7,7 +7,7 @@ import java.util.List;
 public class PricingService {
 
     private static final double TAX_RATE = 0.02;
-    
+
     private final List<DiscountPolicy> discountPolicies;
     private final ShippingCalculator shippingCalculator;
 
@@ -37,6 +37,10 @@ public class PricingService {
     public double calculateTax(PricingContext context) {
         double discountedTotal = calculateDiscountedTotal(context);
         return discountedTotal * TAX_RATE;
+    }
+
+    public double calculateTotalFee(PricingContext context) {
+        return calculateDiscountedTotal(context) + calculateDeliveryFee(context) + calculateTax(context);
     }
 
 }
