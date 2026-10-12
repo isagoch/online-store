@@ -6,6 +6,8 @@ import java.util.List;
 
 public class PricingService {
 
+    private static final double TAX_RATE = 0.02;
+    
     private final List<DiscountPolicy> discountPolicies;
     private final ShippingCalculator shippingCalculator;
 
@@ -21,11 +23,20 @@ public class PricingService {
         }
         return total;
     }
-    
+
     public double calculateDiscountedTotal(PricingContext context) {
         double subtotal = context.subtotal();
         double totalDiscount = calculateTotalDiscount(context);
         return subtotal - totalDiscount;
+    }
+
+    public double calculateDeliveryFee(PricingContext context) {
+        return shippingCalculator.calculateShippingFee(context);
+    }
+
+    public double calculateTax(PricingContext context) {
+        double discountedTotal = calculateDiscountedTotal(context);
+        return discountedTotal * TAX_RATE;
     }
 
 }
