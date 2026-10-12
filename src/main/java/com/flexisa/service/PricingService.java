@@ -21,4 +21,11 @@ public class PricingService {
         }
         return total;
     }
+    
+    public double calculateDiscountedTotal(PricingContext context) {
+        double subtotal = context.subtotal();
+        double totalDiscount = calculateTotalDiscount(context);
+        return subtotal - totalDiscount;
+    }
+
 }
