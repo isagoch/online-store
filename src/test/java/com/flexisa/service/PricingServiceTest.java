@@ -21,4 +21,16 @@ class PricingServiceTest {
         PricingContext context = new PricingContext(300000, 30, null, "Lagos");
         assertEquals(276000, service.calculateDiscountedTotal(context), 0.001);
     }
+
+    @Test
+    void calculateDiscountedTotal_WithPromoCode_Returns246000() {
+        PricingContext context = new PricingContext(300000, 30, "FLEXISA10", "Lagos");
+        assertEquals(246000, service.calculateDiscountedTotal(context), 0.001);
+    }
+
+    @Test
+    void calculateTotalFee_WithQuantity30_ReturnsExpectedTotal() {
+        PricingContext context = new PricingContext(300000, 30, null, "Lagos");
+        assertEquals(281520, service.calculateTotalFee(context), 0.001);
+    }
 }
