@@ -1,6 +1,15 @@
 package com.flexisa;
 
+import java.util.List;
 import java.util.Scanner;
+
+import com.flexisa.discount.HighValueDiscountPolicy;
+import com.flexisa.discount.PromoCodeDiscountPolicy;
+import com.flexisa.discount.QuantityDiscountPolicy;
+import com.flexisa.service.PricingContext;
+import com.flexisa.service.PricingService;
+import com.flexisa.shipping.StandardShippingCalculator;
+import com.flexisa.validation.OrderInputValidator;
 
 public class App {
     private static double readDouble(Scanner scanner, String prompt) {
@@ -18,6 +27,14 @@ public class App {
         return scanner.nextLine();
     }
 
+    private static PricingService createPricingService() {
+        return new PricingService(
+            List.of(new QuantityDiscountPolicy(),
+                    new HighValueDiscountPolicy(),
+                    new PromoCodeDiscountPolicy()),
+            new StandardShippingCalculator());
+    }
+
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
             double price = readDouble(scanner, "Enter the price of the item: ");
@@ -25,18 +42,16 @@ public class App {
             String location = readString(scanner, "Enter the location: ");
             String promoCode = readString(scanner, "Enter the promo code (if any): ");
 
-            OrderPricing.validateOrder(price, quantity, location);
+            OrderInputValidator.validateOrder(price, quantity, location);
+            
+            double subtotal = price * quantity;
+            PricingContext context = new PricingContext(subtotal, quantity, promoCode, location);
+            PricingService pricingService = createPricingService();
 
-            double subtotal = OrderPricing.calculateSubtotal(price, quantity);
-            double quantityDiscount = OrderPricing.calculateDiscount(subtotal, quantity);
-            double highValueDiscount = OrderPricing.calculateHighValueDiscount(subtotal);
-            double promoDiscount = OrderPricing.calculatePromoDiscount(subtotal, promoCode);
-            double totalDiscount = quantityDiscount + highValueDiscount + promoDiscount;
-
-            double deliveryFee = OrderPricing.calculateDeliveryFee(subtotal, location);
-            double discountedTotal = OrderPricing.calculateDiscountedTotal(subtotal, totalDiscount);
-            double tax = OrderPricing.calculateTax(discountedTotal);
-            double fee = OrderPricing.calculateTotalFee(discountedTotal, deliveryFee, tax);
+            double discountedTotal = pricingService.calculateDiscountedTotal(context);
+            double deliveryFee = pricingService.calculateDeliveryFee(context);
+            double tax = pricingService.calculateTax(context);
+            double fee = pricingService.calculateTotalFee(context);
 
             System.out.println("Discounted Total for " + location + ": #" + String.format("%.2f", discountedTotal));
             System.out.println("Delivery fee: #" + String.format("%.2f", deliveryFee));
