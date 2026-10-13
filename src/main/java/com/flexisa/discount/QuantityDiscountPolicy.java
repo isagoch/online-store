@@ -1,6 +1,6 @@
 package com.flexisa.discount;
 
-import com.flexisa.service.PricingContext;
+import com.flexisa.model.PricingContext;
 
 public class QuantityDiscountPolicy implements DiscountPolicy {
 

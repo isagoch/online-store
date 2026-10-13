@@ -6,12 +6,13 @@ import java.util.Scanner;
 import com.flexisa.discount.HighValueDiscountPolicy;
 import com.flexisa.discount.PromoCodeDiscountPolicy;
 import com.flexisa.discount.QuantityDiscountPolicy;
-import com.flexisa.service.PricingContext;
+import com.flexisa.model.PricingContext;
 import com.flexisa.service.PricingService;
 import com.flexisa.shipping.StandardShippingCalculator;
 import com.flexisa.validation.OrderInputValidator;
 
 public class App {
+
     private static double readDouble(Scanner scanner, String prompt) {
         System.out.print(prompt);
         return Double.parseDouble(scanner.nextLine());
@@ -29,17 +30,17 @@ public class App {
 
     private static PricingService createPricingService() {
         return new PricingService(
-            List.of(new QuantityDiscountPolicy(),
-                    new HighValueDiscountPolicy(),
-                    new PromoCodeDiscountPolicy()),
-            new StandardShippingCalculator());
+                List.of(new QuantityDiscountPolicy(),
+                        new HighValueDiscountPolicy(),
+                        new PromoCodeDiscountPolicy()),
+                new StandardShippingCalculator());
     }
 
     private static void printSummary(String location, double discountedTotal, double deliveryFee, double tax, double fee) {
-    System.out.println("Discounted Total for " + location + ": #" + String.format("%.2f", discountedTotal));
-    System.out.println("Delivery fee: #" + String.format("%.2f", deliveryFee));
-    System.out.println("Tax: #" + String.format("%.2f", tax));
-    System.out.println("Total Fee: #" + String.format("%.2f", fee));
+        System.out.println("Discounted Total for " + location + ": #" + String.format("%.2f", discountedTotal));
+        System.out.println("Delivery fee: #" + String.format("%.2f", deliveryFee));
+        System.out.println("Tax: #" + String.format("%.2f", tax));
+        System.out.println("Total Fee: #" + String.format("%.2f", fee));
     }
 
     public static void main(String[] args) {
@@ -62,7 +63,6 @@ public class App {
 
             printSummary(location, discountedTotal, deliveryFee, tax, fee);
 
-            
         } catch (NumberFormatException e) {
             System.err.println("Input Error: Please enter valid numeric values for price and quantity.");
         } catch (IllegalArgumentException e) {

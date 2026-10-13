@@ -2,7 +2,7 @@ package com.flexisa.shipping;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import com.flexisa.service.PricingContext;
+import com.flexisa.model.PricingContext;
 
 class StandardShippingCalculatorTest {
 

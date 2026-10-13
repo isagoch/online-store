@@ -1,6 +1,6 @@
 package com.flexisa.shipping;
 
-import com.flexisa.service.PricingContext;
+import com.flexisa.model.PricingContext;
 
 public interface ShippingCalculator {
 

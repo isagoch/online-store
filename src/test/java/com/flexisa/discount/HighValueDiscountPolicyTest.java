@@ -1,6 +1,6 @@
 package com.flexisa.discount;
 
-import com.flexisa.service.PricingContext;
+import com.flexisa.model.PricingContext;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
