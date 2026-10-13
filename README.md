@@ -48,3 +48,57 @@ The `com.flexisa.model` package models an e-commerce order system. The code is i
 - Class diagram: `docs/class-diagram.md`
 - Design decisions: `docs/design-decisions.md`
 - Run the model tests with `mvn test`.
+
+## Refactoring decisions (Week 3)
+
+### Package structure
+`model`, `service`, `discount`, `shipping`, `validation`. See
+`docs/package-diagram.md` for the before and after diagrams.
+
+### What I did and why
+- **PricingContext (in `model`)**: the three discount rules need different inputs.
+  One data record gives every interface method the same signature. It first lived
+  in `service`, which created a cycle with `discount` and `shipping`, so I moved
+  it into `model`.
+- **Two interfaces, four implementations**: `DiscountPolicy` (quantity, high-value
+  and promo code) and `ShippingCalculator` (standard). Each rule was hard-coded
+  before, and now rules can be added or replaced without editing the service.
+  I did not add `PaymentProcessor` because nothing in the code processes payments
+  and I would have been inventing behaviour.
+- **Composition over inheritance**: `PricingService` holds a list of
+  `DiscountPolicy` objects and a `ShippingCalculator`, passed in through the
+  constructor. It never mentions concrete classes. I used `List.copyOf` so the
+  caller cannot change the list afterwards.
+- **Validation extracted**: `OrderInputValidator` replaces the validation that
+  was mixed into `OrderPricing`. The messages are identical.
+- **App**: `main` was split into small methods for reading, creating the service
+  and printing. The output format is unchanged.
+- **OrderPricing removed**: once nothing used it, I deleted it.
+- **No `repository` or `exception` package**: the project has no persistence,
+  and custom exceptions would change behaviour that the tests lock in.
+
+### Behaviour preserved: old tests to new tests
+| Old test | Now covered by |
+|---|---|
+| Quantity 30 gives 276000 | `PricingServiceTest` |
+| Promo code gives 246000 | `PricingServiceTest` |
+| Negative quantity rejected | `OrderInputValidatorTest` |
+| Zero price rejected | `OrderInputValidatorTest` |
+| Empty location rejected | `OrderInputValidatorTest` |
+| Quantity 24 gives 0, 25 gives 5000 | `QuantityDiscountPolicyTest` |
+| High-value 6000 at 200000 | `HighValueDiscountPolicyTest` |
+| Lagos delivery 1500 | `StandardShippingCalculatorTest` |
+
+### Testing
+69 tests. New tests cover each discount policy, the shipping calculator,
+`PricingService` and the validator, including boundary values.
+
+### Known limitations
+- `calculateDiscountedTotal` runs twice inside `calculateTotalFee`. This is
+  harmless, and I chose simple code over caching.
+- A NaN price passes validation, as it did in Week 1. I left it to preserve
+  behaviour.
+- The Week 2 `Order` still ignores discounts, delivery and tax, so it is not
+  connected to `PricingService`.
+- The model cleanup (repeated checks and style slips in `Customer`, `Order` and
+  `Product`) is future work.

@@ -1,62 +1,72 @@
 package com.flexisa;
 
+import java.util.List;
 import java.util.Scanner;
 
-public class App 
-{
-    public static void main( String[] args )
-    {
-        // prompt the user to input the price, quantity and location
-        try (Scanner scanner = new Scanner(System.in)) {
-        System.out.print("Enter the price of the item: ");
-        double price = Double.parseDouble(scanner.nextLine());
+import com.flexisa.discount.HighValueDiscountPolicy;
+import com.flexisa.discount.PromoCodeDiscountPolicy;
+import com.flexisa.discount.QuantityDiscountPolicy;
+import com.flexisa.model.PricingContext;
+import com.flexisa.service.PricingService;
+import com.flexisa.shipping.StandardShippingCalculator;
+import com.flexisa.validation.OrderInputValidator;
 
-        System.out.print("Enter the quantity of the item: ");
-        int quantity = Integer.parseInt(scanner.nextLine());
+public class App {
 
-        System.out.print("Enter the location: ");
-        String location = scanner.nextLine();
+    private static double readDouble(Scanner scanner, String prompt) {
+        System.out.print(prompt);
+        return Double.parseDouble(scanner.nextLine());
+    }
 
-        System.out.print("Enter the promo code (if any): ");
-        String promoCode = scanner.nextLine();
+    private static int readInt(Scanner scanner, String prompt) {
+        System.out.print(prompt);
+        return Integer.parseInt(scanner.nextLine());
+    }
 
-        // validate input
-        OrderPricing.validateOrder(price, quantity, location);
+    private static String readString(Scanner scanner, String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine();
+    }
 
-        // calculate subtotal
-        double subtotal = OrderPricing.calculateSubtotal(price, quantity);
+    private static PricingService createPricingService() {
+        return new PricingService(
+                List.of(new QuantityDiscountPolicy(),
+                        new HighValueDiscountPolicy(),
+                        new PromoCodeDiscountPolicy()),
+                new StandardShippingCalculator());
+    }
 
-        // calculate discount
-        // calculate discounts
-        double quantityDiscount = OrderPricing.calculateDiscount(subtotal, quantity);
-        double highValueDiscount = OrderPricing.calculateHighValueDiscount(subtotal);
-        double promoDiscount = OrderPricing.calculatePromoDiscount(subtotal, promoCode);
-        double totalDiscount = quantityDiscount + highValueDiscount + promoDiscount;
-
-            //Implement the delivery Logic
-        double delivery_fee = OrderPricing.calculateDeliveryFee(subtotal, location);
-
-            //calculate and display the discounted price
-        double discounted_total = OrderPricing.calculateDiscountedTotal(subtotal, totalDiscount);
-
-            // Implement the tax logic
-        double tax = OrderPricing.calculateTax(discounted_total);
-
-            // Calculate the total fee including discounted_total, delivery_fee and tax
-        double fee = OrderPricing.calculateTotalFee(discounted_total, delivery_fee, tax);
-
-        System.out.println("Discounted Total for " + location + ": #" + String.format("%.2f", discounted_total));
-        System.out.println("Delivery fee: #" + String.format("%.2f", delivery_fee));
+    private static void printSummary(String location, double discountedTotal, double deliveryFee, double tax, double fee) {
+        System.out.println("Discounted Total for " + location + ": #" + String.format("%.2f", discountedTotal));
+        System.out.println("Delivery fee: #" + String.format("%.2f", deliveryFee));
         System.out.println("Tax: #" + String.format("%.2f", tax));
         System.out.println("Total Fee: #" + String.format("%.2f", fee));
     }
 
-    catch (NumberFormatException e) {
-            System.err.println("Input Error: Please enter valid numeric values for price and quantity.");
-    }
-    catch (IllegalArgumentException e) {
-            System.err.println("Input Error: " + e.getMessage());
-    }
+    public static void main(String[] args) {
+        try (Scanner scanner = new Scanner(System.in)) {
+            double price = readDouble(scanner, "Enter the price of the item: ");
+            int quantity = readInt(scanner, "Enter the quantity of the item: ");
+            String location = readString(scanner, "Enter the location: ");
+            String promoCode = readString(scanner, "Enter the promo code (if any): ");
 
+            OrderInputValidator.validateOrder(price, quantity, location);
+
+            double subtotal = price * quantity;
+            PricingContext context = new PricingContext(subtotal, quantity, promoCode, location);
+            PricingService pricingService = createPricingService();
+
+            double discountedTotal = pricingService.calculateDiscountedTotal(context);
+            double deliveryFee = pricingService.calculateDeliveryFee(context);
+            double tax = pricingService.calculateTax(context);
+            double fee = pricingService.calculateTotalFee(context);
+
+            printSummary(location, discountedTotal, deliveryFee, tax, fee);
+
+        } catch (NumberFormatException e) {
+            System.err.println("Input Error: Please enter valid numeric values for price and quantity.");
+        } catch (IllegalArgumentException e) {
+            System.err.println("Input Error: " + e.getMessage());
+        }
     }
 }
