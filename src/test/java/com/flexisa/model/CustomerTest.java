@@ -1,5 +1,8 @@
 package com.flexisa.model;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 public class CustomerTest {
@@ -55,6 +58,7 @@ public class CustomerTest {
     }
 
     @Test
+    @SuppressWarnings("ObjectEqualsNull")
     public void equals_Null_ReturnsFalse() {
         Customer customer = new Customer("2400244", "Isabelle", "isagoch@gmail.com", lagos);
 
