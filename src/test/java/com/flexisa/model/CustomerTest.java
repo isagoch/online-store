@@ -37,4 +37,35 @@ public class CustomerTest {
     );
     assertEquals("Customer address must not be null", exception.getMessage());
     }
+
+    @Test
+    public void equals_SameId_ReturnsTrue() {
+        Customer first = new Customer("2400244", "Isabelle", "isagoch@gmail.com", lagos);
+        Customer second = new Customer("2400244", "Emmanuel", "emmanuel@example.com", lagos);
+
+        assertEquals(first, second);
+    }
+
+    @Test
+    public void equals_DifferentId_ReturnsFalse() {
+        Customer first = new Customer("2400244", "Isabelle", "isagoch@gmail.com", lagos);
+        Customer second = new Customer("2400245", "Isabelle", "isagoch@gmail.com", lagos);
+
+        assertNotEquals(first, second);
+    }
+
+    @Test
+    public void equals_Null_ReturnsFalse() {
+        Customer customer = new Customer("2400244", "Isabelle", "isagoch@gmail.com", lagos);
+
+        assertFalse(customer.equals(null));
+    }
+
+    @Test
+    public void hashCode_SameId_ReturnsSameHashCode() {
+        Customer first = new Customer("2400244", "Isabelle", "isagoch@gmail.com", lagos);
+        Customer second = new Customer("2400244", "Emmanuel", "emmanuel@example.com", lagos);
+
+        assertEquals(first.hashCode(), second.hashCode());
+    }
 }
