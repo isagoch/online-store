@@ -1,5 +1,12 @@
 package com.flexisa.model;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 public class ProductTest {
@@ -66,5 +73,48 @@ public class ProductTest {
         Product product = new Product("P001", "Laptop", 999.99, 10);
         product.increaseStock(5);
         assertEquals(15, product.getStockQuantity());
+    }
+
+    @Test
+    public void equals_SameId_ReturnsTrue() {
+        Product first = new Product("P001", "Laptop", 999.99, 10);
+        Product second = new Product("P001", "Phone", 499.99, 5);
+
+        assertEquals(first, second);
+    }
+
+    @Test
+    public void equals_DifferentId_ReturnsFalse() {
+        Product first = new Product("P001", "Laptop", 999.99, 10);
+        Product second = new Product("P002", "Laptop", 999.99, 10);
+
+        assertNotEquals(first, second);
+    }
+
+    @Test
+    @SuppressWarnings("ObjectEqualsNull")
+    public void equals_Null_ReturnsFalse() {
+        Product product = new Product("P001", "Laptop", 999.99, 10);
+
+        assertFalse(product.equals(null));
+    }
+
+    @Test
+    public void hashCode_SameId_ReturnsSameHashCode() {
+        Product first = new Product("P001", "Laptop", 999.99, 10);
+        Product second = new Product("P001", "Phone", 499.99, 5);
+
+        assertEquals(first.hashCode(), second.hashCode());
+    }
+
+    @Test
+    public void hashSet_ProductChangesStockAfterAdding_StillFound() {
+        Product product = new Product("P001", "Laptop", 999.99, 10);
+        Set<Product> products = new HashSet<>();
+        products.add(product);
+
+        product.reduceStock(1);
+
+        assertTrue(products.contains(product));
     }
 }
