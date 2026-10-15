@@ -59,5 +59,21 @@ public class Product {
         this.stockQuantity += quantity;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Product other)) {
+            return false;
+        }
+        return this.id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
 }
 
