@@ -1,9 +1,13 @@
 package com.flexisa.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
 public class OrderTest {
@@ -135,5 +139,54 @@ public class OrderTest {
 
         assertEquals("Order must contain at least one item before processing", exception.getMessage());
         assertEquals(OrderStatus.PENDING, order.getStatus());
+    }
+
+    @Test
+    void equals_SameId_ReturnsTrue() {
+        Customer otherCustomer = new Customer(
+                "2400245",
+                "Different Customer",
+                "different@example.com",
+                lagos);
+        Order first = new Order("order-1", customer);
+        Order second = new Order("order-1", otherCustomer);
+
+        assertEquals(first, second);
+    }
+
+    @Test
+    void equals_DifferentId_ReturnsFalse() {
+        Order first = new Order("order-1", customer);
+        Order second = new Order("order-2", customer);
+
+        assertNotEquals(first, second);
+    }
+
+    @Test
+    @SuppressWarnings("ObjectEqualsNull")
+    void equals_Null_ReturnsFalse() {
+        Order order = new Order("order-1", customer);
+
+        assertFalse(order.equals(null));
+    }
+
+    @Test
+    void hashCode_SameId_ReturnsSameHashCode() {
+        Order first = new Order("order-1", customer);
+        Order second = new Order("order-1", customer);
+
+        assertEquals(first.hashCode(), second.hashCode());
+    }
+
+    @Test
+    void hashSet_OrderChangesItemsAndStatusAfterAdding_StillFound() {
+        Order order = new Order("order-1", customer);
+        Set<Order> orders = new HashSet<>();
+        orders.add(order);
+
+        order.addItem(new OrderItem(product, 1));
+        order.startProcessing();
+
+        assertTrue(orders.contains(order));
     }
 }
