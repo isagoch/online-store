@@ -2,6 +2,7 @@ package com.flexisa.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.flexisa.model.Product;
@@ -37,9 +38,11 @@ public class ProductParserTest {
     }
 
     @Test
-    void parseLine_withNonNumericPrice_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> ProductParser.parseLine("P001,Laptop,abc,12"));
+    void parseLine_withNonNumericPrice_throwsNumberFormatException() {
+        NumberFormatException exception = assertThrows(NumberFormatException.class,
+            () -> ProductParser.parseLine("P001,Laptop,abc,12"));
+
+        assertTrue(exception.getMessage().contains("abc"));
     }
 
     @Test
