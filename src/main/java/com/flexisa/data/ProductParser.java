@@ -8,6 +8,10 @@ public final class ProductParser {
     }
 
     public static Product parseLine(String line) {
+        if (line == null || line.isBlank()) {
+            throw new IllegalArgumentException("Product line must not be blank");
+        }
+
         String[] parts = line.split(",", -1);
 
         if (parts.length != 4) {

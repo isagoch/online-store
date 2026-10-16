@@ -1,7 +1,6 @@
 package com.flexisa.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
@@ -31,14 +30,27 @@ public class ProductParserTest {
 
     @Test
     void parseLine_withTooFewColumns_throwsIllegalArgumentException() {
-        assertNotNull(assertThrows(IllegalArgumentException.class,
-            () -> ProductParser.parseLine("P001,Laptop,450000")));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> ProductParser.parseLine("P001,Laptop,450000"));
+
+        assertEquals("Invalid product line: P001,Laptop,450000", exception.getMessage());
     }
 
     @Test
     void parseLine_withNonNumericPrice_throwsIllegalArgumentException() {
-        assertNotNull(assertThrows(IllegalArgumentException.class,
-            () -> ProductParser.parseLine("P001,Laptop,abc,12")));
+        assertThrows(IllegalArgumentException.class,
+                () -> ProductParser.parseLine("P001,Laptop,abc,12"));
+    }
+
+    @Test
+    void parseLine_withNullOrBlankLine_throwsIllegalArgumentException() {
+        IllegalArgumentException nullException = assertThrows(IllegalArgumentException.class,
+                () -> ProductParser.parseLine(null));
+        IllegalArgumentException blankException = assertThrows(IllegalArgumentException.class,
+                () -> ProductParser.parseLine("   "));
+
+        assertEquals("Product line must not be blank", nullException.getMessage());
+        assertEquals("Product line must not be blank", blankException.getMessage());
     }
 
     @Test
