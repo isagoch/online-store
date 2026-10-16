@@ -1,0 +1,14 @@
+id,name,price,stock
+P001,Laptop,450000,12
+P002,Wireless Mouse,8500,45
+P003,Mechanical Keyboard,32000,18
+P004,USB-C Hub,14500,0
+P005,Monitor,185000,7
+P006,Desk Lamp,12500,24
+P007,Webcam,27000,9
+P008,Headphones,42000,15
+P009,External SSD,68000,6
+P003,Mechanical Keyboard,29500,20
+P010,Office Chair,-75000,4
+P011,Phone Stand,abc,32
+P012,Notebook,2500
