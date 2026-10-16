@@ -1,0 +1,12 @@
+id,name,email,street,city,state,country,postalCode
+C001,Ada Okafor,ada.okafor@example.com,14 Allen Avenue,Ikeja,Lagos,Nigeria,100001
+C002,Tunde Bello,tunde.bello@example.com,8 Ring Road,Ibadan,Oyo,Nigeria,200212
+C003,Chika Nwosu,chika.nwosu@example.com,22 Aminu Kano Crescent,Abuja,FCT,Nigeria,900001
+C004,Musa Ibrahim,musa.ibrahim@example.com,5 Zoo Road,Kano,Kano,Nigeria,700001
+C005,Grace Eze,grace.eze@example.com,17 Aba Road,Port Harcourt,Rivers,Nigeria,500001
+C006,Daniel Afolabi,daniel.afolabi@example.com,3 Broad Street,Lagos,Lagos,Nigeria,100002
+C007,Zainab Yusuf,zainab.yusuf@example.com,11 Dugbe Road,Ibadan,Oyo,Nigeria,200213
+C003,Chika Nwosu,chika.nwosu@example.com,9 Garki Road,Abuja,FCT,Nigeria,900002
+C008,,blank.name@example.com,12 Marina Road,Lagos,Lagos,Nigeria,100003
+C009,Peter James,peter.james.example.com,6 Airport Road,Abuja,FCT,Nigeria,900003
+C010,Lola Adeyemi,lola.adeyemi@example.com,4 Osborne Road,Lagos,Lagos,Nigeria
