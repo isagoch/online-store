@@ -41,6 +41,16 @@ public class SalesAnalyser {
                 .toList();
     }
 
+    public List<Order> filterOrdersByCustomerId(String customerId) {
+        if (customerId == null || customerId.isBlank()) {
+            throw new IllegalArgumentException("Customer ID must not be null or blank");
+        }
+        String normalizedCustomerId = customerId.trim();
+        return orders.stream()
+                .filter(order -> order.getCustomer().getId().equals(normalizedCustomerId))
+                .toList();
+    }
+
     private static String normalizeKeyword(String keyword) {
         if (keyword == null || keyword.isBlank()) {
             throw new IllegalArgumentException("Search keyword must not be null or blank");
