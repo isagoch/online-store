@@ -2,10 +2,13 @@ package com.flexisa.service;
 
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.flexisa.model.Order;
 import com.flexisa.model.OrderStatus;
@@ -106,6 +109,26 @@ public class SalesAnalyser {
 
     public List<Order> removeDuplicateOrders() {
         return List.copyOf(new LinkedHashSet<>(orders));
+    }
+
+    public Map<OrderStatus, List<Order>> groupOrdersByStatus() {
+        return uniqueOrders().stream()
+                .collect(Collectors.groupingBy(
+                        Order::getStatus,
+                        LinkedHashMap::new,
+                        Collectors.toList()));
+    }
+
+    public Map<String, List<Order>> groupOrdersByCustomerId() {
+        return uniqueOrders().stream()
+                .collect(Collectors.groupingBy(
+                        order -> order.getCustomer().getId(),
+                        LinkedHashMap::new,
+                        Collectors.toList()));
+    }
+
+    private List<Order> uniqueOrders() {
+        return removeDuplicateOrders();
     }
 
     private static String normalizeKeyword(String keyword) {
