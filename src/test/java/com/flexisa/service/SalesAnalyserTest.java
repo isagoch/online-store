@@ -297,4 +297,41 @@ class SalesAnalyserTest {
         assertEquals(List.of(), analyser.sortProductsByName());
         assertEquals(List.of(), analyser.sortProductsByStockQuantity());
     }
+
+    @Test
+    void removeDuplicateProducts_keepsFirstOccurrenceInInsertionOrder() {
+        List<Product> uniqueProducts = createAnalyser().removeDuplicateProducts();
+
+        assertEquals(List.of("P001", "P002", "P003", "P004", "P005",
+                        "P006", "P007", "P008", "P009"),
+                uniqueProducts.stream().map(Product::getId).toList());
+        assertEquals(32_000.0, uniqueProducts.get(2).getPrice());
+    }
+
+    @Test
+    void removeDuplicateProducts_withNoProducts_returnsEmptyList() {
+        SalesAnalyser analyser = new SalesAnalyser(List.of(), List.of());
+
+        assertEquals(List.of(), analyser.removeDuplicateProducts());
+    }
+
+    @Test
+    void removeDuplicateProducts_withDistinctIds_returnsProductsUnchanged() {
+        List<Product> products = List.of(
+                new Product("P100", "Tablet", 90_000, 4),
+                new Product("P101", "Smart Watch", 45_000, 7),
+                new Product("P102", "Charger", 8_000, 12));
+        SalesAnalyser analyser = new SalesAnalyser(products, List.of());
+
+        assertEquals(products, analyser.removeDuplicateProducts());
+    }
+
+    @Test
+    void removeDuplicateProducts_doesNotChangeAnalyserProductList() {
+        SalesAnalyser analyser = createAnalyser();
+
+        analyser.removeDuplicateProducts();
+
+        assertEquals(2, analyser.searchProducts("key").size());
+    }
 }
