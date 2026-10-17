@@ -334,4 +334,60 @@ class SalesAnalyserTest {
 
         assertEquals(2, analyser.searchProducts("key").size());
     }
+
+    @Test
+    void findDuplicateOrderIds_returnsDuplicateIdsInEncounterOrder() {
+        assertEquals(List.of("O007"), createAnalyser().findDuplicateOrderIds());
+    }
+
+    @Test
+    void findDuplicateOrderIds_withNoOrders_returnsEmptyList() {
+        SalesAnalyser analyser = new SalesAnalyser(List.of(), List.of());
+
+        assertEquals(List.of(), analyser.findDuplicateOrderIds());
+    }
+
+    @Test
+    void removeDuplicateOrders_keepsFirstOccurrenceInOrder() {
+        List<Order> uniqueOrders = createAnalyser().removeDuplicateOrders();
+
+        assertEquals(12, uniqueOrders.size());
+        assertEquals(List.of("O001", "O002", "O003", "O004", "O005", "O006",
+                        "O007", "O009", "O010", "O011", "O012", "O013"),
+                uniqueOrders.stream().map(Order::getId).toList());
+        assertEquals(1, uniqueOrders.stream().filter(order -> order.getId().equals("O007")).count());
+        assertEquals(35_500.0, uniqueOrders.stream()
+                .filter(order -> order.getId().equals("O007"))
+                .findFirst()
+                .orElseThrow()
+                .calculateTotal());
+    }
+
+    @Test
+    void removeDuplicateOrders_resultHasNoDuplicateOrderIds() {
+        SalesAnalyser analyser = createAnalyser();
+        SalesAnalyser deduplicatedAnalyser = new SalesAnalyser(
+                loadProducts(), analyser.removeDuplicateOrders());
+
+        assertEquals(List.of(), deduplicatedAnalyser.findDuplicateOrderIds());
+    }
+
+    @Test
+    void findDuplicateOrderIds_withIdRepeatedThreeTimes_returnsIdOnce() {
+        Customer customer = loadCustomers().get(0);
+        List<Order> orders = List.of(
+                new Order("REPEATED", customer),
+                new Order("REPEATED", customer),
+                new Order("REPEATED", customer));
+        SalesAnalyser analyser = new SalesAnalyser(List.of(), orders);
+
+        assertEquals(List.of("REPEATED"), analyser.findDuplicateOrderIds());
+    }
+
+    @Test
+    void removeDuplicateOrders_withNoOrders_returnsEmptyList() {
+        SalesAnalyser analyser = new SalesAnalyser(List.of(), List.of());
+
+        assertEquals(List.of(), analyser.removeDuplicateOrders());
+    }
 }
