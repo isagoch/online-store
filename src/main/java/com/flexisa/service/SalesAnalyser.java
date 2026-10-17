@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.flexisa.model.Order;
+import com.flexisa.model.OrderStatus;
 import com.flexisa.model.Product;
 
 public class SalesAnalyser {
@@ -28,6 +29,15 @@ public class SalesAnalyser {
         return orders.stream()
                 .filter(order -> containsIgnoreCase(order.getId(), normalizedKeyword)
                         || containsIgnoreCase(order.getCustomer().getName(), normalizedKeyword))
+                .toList();
+    }
+
+    public List<Order> filterOrdersByStatus(OrderStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("Order status must not be null");
+        }
+        return orders.stream()
+                .filter(order -> order.getStatus() == status)
                 .toList();
     }
 
