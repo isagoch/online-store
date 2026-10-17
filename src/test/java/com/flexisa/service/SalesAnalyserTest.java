@@ -195,4 +195,60 @@ class SalesAnalyserTest {
         assertEquals(List.of("O001", "O002", "O003", "O011"),
                 matches.stream().map(Order::getId).toList());
     }
+
+    @Test
+    void filterOrdersByTotalRange_includesExactMinimumAndMaximum() {
+        List<Order> minimumMatches = createAnalyser().filterOrdersByTotalRange(12_500, 12_500);
+        List<Order> duplicateMaximumMatches = createAnalyser().filterOrdersByTotalRange(35_500, 35_500);
+
+        assertEquals(List.of("O005"), minimumMatches.stream().map(Order::getId).toList());
+        assertEquals(List.of("O007", "O007"),
+                duplicateMaximumMatches.stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void filterOrdersByTotalRange_includesZeroTotalOrder() {
+        List<Order> matches = createAnalyser().filterOrdersByTotalRange(0, 0);
+
+        assertEquals(List.of("O009"), matches.stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void filterOrdersByTotalRange_includesCancelledOrders() {
+        List<Order> matches = createAnalyser().filterOrdersByTotalRange(1_474_000, 1_474_000);
+
+        assertEquals(List.of("O006"), matches.stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void filterOrdersByTotalRange_withMiddleRange_returnsOrdersWithinBounds() {
+        List<Order> matches = createAnalyser().filterOrdersByTotalRange(100_000, 220_000);
+
+        assertEquals(List.of("O003", "O004", "O010", "O011", "O012"),
+                matches.stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void filterOrdersByTotalRange_withNoMatches_returnsEmptyList() {
+        assertEquals(List.of(), createAnalyser().filterOrdersByTotalRange(500_000, 1_000_000));
+    }
+
+    @Test
+    void filterOrdersByTotalRange_withMinimumGreaterThanMaximum_throwsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> createAnalyser().filterOrdersByTotalRange(10, 5));
+
+        assertEquals("Minimum total must not exceed maximum total", exception.getMessage());
+    }
+
+    @Test
+    void filterOrdersByTotalRange_withNaNBound_throwsIllegalArgumentException() {
+        IllegalArgumentException minimumException = assertThrows(IllegalArgumentException.class,
+                () -> createAnalyser().filterOrdersByTotalRange(Double.NaN, 10));
+        IllegalArgumentException maximumException = assertThrows(IllegalArgumentException.class,
+                () -> createAnalyser().filterOrdersByTotalRange(0, Double.NaN));
+
+        assertEquals("Total range bounds must not be NaN", minimumException.getMessage());
+        assertEquals("Total range bounds must not be NaN", maximumException.getMessage());
+    }
 }
