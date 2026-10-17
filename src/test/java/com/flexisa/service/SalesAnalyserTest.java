@@ -12,6 +12,7 @@ import com.flexisa.data.ProductParser;
 import com.flexisa.data.SampleOrders;
 import com.flexisa.model.Customer;
 import com.flexisa.model.Order;
+import com.flexisa.model.OrderStatus;
 import com.flexisa.model.Product;
 
 class SalesAnalyserTest {
@@ -68,7 +69,7 @@ class SalesAnalyserTest {
 
         IllegalArgumentException nullException = assertThrows(IllegalArgumentException.class,
         () -> analyser.searchProducts(null));
-IllegalArgumentException blankException = assertThrows(IllegalArgumentException.class,
+        IllegalArgumentException blankException = assertThrows(IllegalArgumentException.class,
         () -> analyser.searchProducts("  "));
 
         assertEquals("Search keyword must not be null or blank", nullException.getMessage());
@@ -120,5 +121,36 @@ IllegalArgumentException blankException = assertThrows(IllegalArgumentException.
 
         assertEquals("Search keyword must not be null or blank", nullException.getMessage());
         assertEquals("Search keyword must not be null or blank", blankException.getMessage());
+    }
+
+    @Test
+    void filterOrdersByStatus_withDeliveredStatus_returnsDeliveredOrders() {
+        List<Order> matches = createAnalyser().filterOrdersByStatus(OrderStatus.DELIVERED);
+
+        assertEquals(List.of("O001", "O004", "O010"),
+                matches.stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void filterOrdersByStatus_withShippedStatus_keepsDuplicateOrders() {
+        List<Order> matches = createAnalyser().filterOrdersByStatus(OrderStatus.SHIPPED);
+
+        assertEquals(List.of("O002", "O007", "O007"),
+                matches.stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void filterOrdersByStatus_withNullStatus_throwsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> createAnalyser().filterOrdersByStatus(null));
+
+        assertEquals("Order status must not be null", exception.getMessage());
+    }
+
+    @Test
+    void filterOrdersByStatus_withNoOrders_returnsEmptyList() {
+        SalesAnalyser analyser = new SalesAnalyser(loadProducts(), List.of());
+
+        assertEquals(List.of(), analyser.filterOrdersByStatus(OrderStatus.DELIVERED));
     }
 }
