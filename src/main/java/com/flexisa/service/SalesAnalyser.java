@@ -51,6 +51,22 @@ public class SalesAnalyser {
                 .toList();
     }
 
+    public List<Order> filterOrdersByTotalRange(double min, double max) {
+        if (Double.isNaN(min) || Double.isNaN(max)) {
+            throw new IllegalArgumentException("Total range bounds must not be NaN");
+        }
+        if (min > max) {
+            throw new IllegalArgumentException("Minimum total must not exceed maximum total");
+        }
+        return orders.stream()
+                // This is the plain item total; cancelled orders are not excluded.
+                .filter(order -> {
+                    double total = order.calculateTotal();
+                    return total >= min && total <= max;
+                })
+                .toList();
+    }
+
     private static String normalizeKeyword(String keyword) {
         if (keyword == null || keyword.isBlank()) {
             throw new IllegalArgumentException("Search keyword must not be null or blank");
