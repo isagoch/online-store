@@ -1,9 +1,11 @@
 package com.flexisa.service;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import com.flexisa.model.Order;
 import com.flexisa.model.OrderStatus;
@@ -89,6 +91,21 @@ public class SalesAnalyser {
 
     public List<Product> removeDuplicateProducts() {
         return List.copyOf(new LinkedHashSet<>(products));
+    }
+
+    public List<String> findDuplicateOrderIds() {
+        Set<String> seen = new HashSet<>();
+        Set<String> duplicates = new LinkedHashSet<>();
+        for (Order order : orders) {
+            if (!seen.add(order.getId())) {
+                duplicates.add(order.getId());
+            }
+        }
+        return List.copyOf(duplicates);
+    }
+
+    public List<Order> removeDuplicateOrders() {
+        return List.copyOf(new LinkedHashSet<>(orders));
     }
 
     private static String normalizeKeyword(String keyword) {
