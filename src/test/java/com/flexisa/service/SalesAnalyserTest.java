@@ -251,4 +251,50 @@ class SalesAnalyserTest {
         assertEquals("Total range bounds must not be NaN", minimumException.getMessage());
         assertEquals("Total range bounds must not be NaN", maximumException.getMessage());
     }
+
+    @Test
+    void sortProductsByPrice_returnsProductsInAscendingPriceOrder() {
+        List<Product> sorted = createAnalyser().sortProductsByPrice();
+
+        assertEquals(List.of("P002", "P006", "P004", "P007", "P003", "P003",
+                        "P008", "P009", "P005", "P001"),
+                sorted.stream().map(Product::getId).toList());
+        assertEquals(29_500.0, sorted.get(4).getPrice());
+        assertEquals(32_000.0, sorted.get(5).getPrice());
+    }
+
+    @Test
+    void sortProductsByName_isCaseInsensitiveAndStableForEqualNames() {
+        List<Product> sorted = createAnalyser().sortProductsByName();
+
+        assertEquals(List.of("Desk Lamp", "External SSD", "Headphones", "Laptop",
+                        "Mechanical Keyboard", "Mechanical Keyboard", "Monitor",
+                        "USB-C Hub", "Webcam", "Wireless Mouse"),
+                sorted.stream().map(Product::getName).toList());
+        List<Double> keyboardPrices = sorted.stream()
+                .filter(product -> product.getName().equals("Mechanical Keyboard"))
+                .map(Product::getPrice)
+                .toList();
+        assertEquals(List.of(32_000.0, 29_500.0), keyboardPrices);
+    }
+
+    @Test
+    void sortProductsByStockQuantity_returnsProductsInAscendingStockOrder() {
+        List<Product> sorted = createAnalyser().sortProductsByStockQuantity();
+
+        assertEquals(List.of("P004", "P009", "P005", "P007", "P001",
+                        "P008", "P003", "P003", "P006", "P002"),
+                sorted.stream().map(Product::getId).toList());
+        assertEquals(18, sorted.get(6).getStockQuantity());
+        assertEquals(20, sorted.get(7).getStockQuantity());
+    }
+
+    @Test
+    void sortProducts_withNoProducts_returnsEmptyLists() {
+        SalesAnalyser analyser = new SalesAnalyser(List.of(), List.of());
+
+        assertEquals(List.of(), analyser.sortProductsByPrice());
+        assertEquals(List.of(), analyser.sortProductsByName());
+        assertEquals(List.of(), analyser.sortProductsByStockQuantity());
+    }
 }
