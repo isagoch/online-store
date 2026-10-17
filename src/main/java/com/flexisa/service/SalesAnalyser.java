@@ -1,5 +1,6 @@
 package com.flexisa.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -64,6 +65,24 @@ public class SalesAnalyser {
                     double total = order.calculateTotal();
                     return total >= min && total <= max;
                 })
+                .toList();
+    }
+
+    public List<Product> sortProductsByPrice() {
+        return products.stream()
+                .sorted(Comparator.comparingDouble(Product::getPrice))
+                .toList();
+    }
+
+    public List<Product> sortProductsByName() {
+        return products.stream()
+                .sorted(Comparator.comparing(Product::getName, String.CASE_INSENSITIVE_ORDER))
+                .toList();
+    }
+
+    public List<Product> sortProductsByStockQuantity() {
+        return products.stream()
+                .sorted(Comparator.comparingInt(Product::getStockQuantity))
                 .toList();
     }
 
