@@ -1,6 +1,7 @@
 package com.flexisa.service;
 
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -84,6 +85,10 @@ public class SalesAnalyser {
         return products.stream()
                 .sorted(Comparator.comparingInt(Product::getStockQuantity))
                 .toList();
+    }
+
+    public List<Product> removeDuplicateProducts() {
+        return List.copyOf(new LinkedHashSet<>(products));
     }
 
     private static String normalizeKeyword(String keyword) {
