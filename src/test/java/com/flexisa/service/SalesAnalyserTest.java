@@ -1,8 +1,10 @@
 package com.flexisa.service;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
@@ -389,5 +391,53 @@ class SalesAnalyserTest {
         SalesAnalyser analyser = new SalesAnalyser(List.of(), List.of());
 
         assertEquals(List.of(), analyser.removeDuplicateOrders());
+    }
+
+    @Test
+    void groupOrdersByStatus_groupsUniqueOrdersInEncounterOrder() {
+        Map<OrderStatus, List<Order>> groups = createAnalyser().groupOrdersByStatus();
+
+        assertEquals(List.of(OrderStatus.DELIVERED, OrderStatus.SHIPPED,
+                        OrderStatus.PROCESSING, OrderStatus.PENDING, OrderStatus.CANCELLED),
+                List.copyOf(groups.keySet()));
+        assertEquals(List.of("O001", "O004", "O010"), groups.get(OrderStatus.DELIVERED)
+                .stream().map(Order::getId).toList());
+        assertEquals(List.of("O002", "O007"), groups.get(OrderStatus.SHIPPED)
+                .stream().map(Order::getId).toList());
+        assertEquals(1, groups.get(OrderStatus.SHIPPED).stream()
+                .filter(order -> order.getId().equals("O007")).count());
+        assertEquals(List.of("O003", "O012"), groups.get(OrderStatus.PROCESSING)
+                .stream().map(Order::getId).toList());
+        assertEquals(List.of("O005", "O009", "O013"), groups.get(OrderStatus.PENDING)
+                .stream().map(Order::getId).toList());
+        assertEquals(List.of("O006", "O011"), groups.get(OrderStatus.CANCELLED)
+                .stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void groupOrdersByCustomerId_groupsUniqueOrdersAndOmitsCustomersWithNoOrders() {
+        Map<String, List<Order>> groups = createAnalyser().groupOrdersByCustomerId();
+
+        assertEquals(List.of("C001", "C002", "C003", "C004", "C005", "C006"),
+                List.copyOf(groups.keySet()));
+        assertEquals(List.of("O001", "O002", "O003", "O011"),
+                groups.get("C001").stream().map(Order::getId).toList());
+        assertEquals(List.of("O004", "O005"),
+                groups.get("C002").stream().map(Order::getId).toList());
+        assertEquals(List.of("O006"), groups.get("C003").stream().map(Order::getId).toList());
+        assertEquals(List.of("O007", "O012"),
+                groups.get("C004").stream().map(Order::getId).toList());
+        assertEquals(List.of("O009"), groups.get("C005").stream().map(Order::getId).toList());
+        assertEquals(List.of("O010", "O013"),
+                groups.get("C006").stream().map(Order::getId).toList());
+        assertFalse(groups.containsKey("C007"));
+    }
+
+    @Test
+    void groupingMethods_withNoOrders_returnEmptyMaps() {
+        SalesAnalyser analyser = new SalesAnalyser(List.of(), List.of());
+
+        assertEquals(Map.of(), analyser.groupOrdersByStatus());
+        assertEquals(Map.of(), analyser.groupOrdersByCustomerId());
     }
 }
