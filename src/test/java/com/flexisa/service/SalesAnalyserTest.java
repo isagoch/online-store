@@ -6,8 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
+import com.flexisa.data.CustomerParser;
 import com.flexisa.data.DataLoader;
 import com.flexisa.data.ProductParser;
+import com.flexisa.data.SampleOrders;
+import com.flexisa.model.Customer;
+import com.flexisa.model.Order;
 import com.flexisa.model.Product;
 
 class SalesAnalyserTest {
@@ -18,8 +22,16 @@ class SalesAnalyserTest {
                 ProductParser::parseLine).valid();
     }
 
+    private List<Customer> loadCustomers() {
+        return DataLoader.parseAll(
+                DataLoader.readResourceLines("customers.csv"),
+                CustomerParser::parseLine).valid();
+    }
+
     private SalesAnalyser createAnalyser() {
-        return new SalesAnalyser(loadProducts(), List.of());
+        List<Product> products = loadProducts();
+        List<Order> orders = SampleOrders.create(loadCustomers(), products);
+        return new SalesAnalyser(products, orders);
     }
 
     @Test
@@ -61,8 +73,6 @@ IllegalArgumentException blankException = assertThrows(IllegalArgumentException.
 
         assertEquals("Search keyword must not be null or blank", nullException.getMessage());
         assertEquals("Search keyword must not be null or blank", blankException.getMessage());
-        assertEquals(IllegalArgumentException.class,
-            assertThrows(IllegalArgumentException.class, () -> analyser.searchProducts("  ")).getClass());
     }
 
     @Test
@@ -70,5 +80,45 @@ IllegalArgumentException blankException = assertThrows(IllegalArgumentException.
         List<Product> matches = createAnalyser().searchProducts("  laptop  ");
 
         assertEquals(List.of("P001"), matches.stream().map(Product::getId).toList());
+    }
+
+    @Test
+    void searchOrders_withDuplicateOrderId_returnsBothRecords() {
+        List<Order> matches = createAnalyser().searchOrders("O007");
+
+        assertEquals(List.of("O007", "O007"), matches.stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void searchOrders_withCustomerName_returnsMatchingOrdersInDatasetOrder() {
+        List<Order> matches = createAnalyser().searchOrders("ada");
+
+        assertEquals(List.of("O001", "O002", "O003", "O011"),
+                matches.stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void searchOrders_isCaseInsensitiveForCustomerName() {
+        List<Order> matches = createAnalyser().searchOrders("CHIKA");
+
+        assertEquals(List.of("O006"), matches.stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void searchOrders_withNoMatch_returnsEmptyList() {
+        assertEquals(List.of(), createAnalyser().searchOrders("zzz"));
+    }
+
+    @Test
+    void searchOrders_withNullOrBlankKeyword_throwsIllegalArgumentException() {
+        SalesAnalyser analyser = createAnalyser();
+
+        IllegalArgumentException nullException = assertThrows(IllegalArgumentException.class,
+                () -> analyser.searchOrders(null));
+        IllegalArgumentException blankException = assertThrows(IllegalArgumentException.class,
+                () -> analyser.searchOrders("  "));
+
+        assertEquals("Search keyword must not be null or blank", nullException.getMessage());
+        assertEquals("Search keyword must not be null or blank", blankException.getMessage());
     }
 }
