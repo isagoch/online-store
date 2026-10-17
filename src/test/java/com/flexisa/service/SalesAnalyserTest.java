@@ -153,4 +153,46 @@ class SalesAnalyserTest {
 
         assertEquals(List.of(), analyser.filterOrdersByStatus(OrderStatus.DELIVERED));
     }
+
+    @Test
+    void filterOrdersByCustomerId_withC001_returnsItsOrdersInDatasetOrder() {
+        List<Order> matches = createAnalyser().filterOrdersByCustomerId("C001");
+
+        assertEquals(List.of("O001", "O002", "O003", "O011"),
+                matches.stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void filterOrdersByCustomerId_withC004_keepsDuplicateOrderRecords() {
+        List<Order> matches = createAnalyser().filterOrdersByCustomerId("C004");
+
+        assertEquals(List.of("O007", "O007", "O012"),
+                matches.stream().map(Order::getId).toList());
+    }
+
+    @Test
+    void filterOrdersByCustomerId_withCustomerWhoHasNoOrders_returnsEmptyList() {
+        assertEquals(List.of(), createAnalyser().filterOrdersByCustomerId("C007"));
+    }
+
+    @Test
+    void filterOrdersByCustomerId_withNullOrBlankId_throwsIllegalArgumentException() {
+        SalesAnalyser analyser = createAnalyser();
+
+        IllegalArgumentException nullException = assertThrows(IllegalArgumentException.class,
+                () -> analyser.filterOrdersByCustomerId(null));
+        IllegalArgumentException blankException = assertThrows(IllegalArgumentException.class,
+                () -> analyser.filterOrdersByCustomerId("  "));
+
+        assertEquals("Customer ID must not be null or blank", nullException.getMessage());
+        assertEquals("Customer ID must not be null or blank", blankException.getMessage());
+    }
+
+    @Test
+    void filterOrdersByCustomerId_trimsIdBeforeMatching() {
+        List<Order> matches = createAnalyser().filterOrdersByCustomerId("  C001  ");
+
+        assertEquals(List.of("O001", "O002", "O003", "O011"),
+                matches.stream().map(Order::getId).toList());
+    }
 }
