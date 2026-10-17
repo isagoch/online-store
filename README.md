@@ -24,6 +24,12 @@ The app asks for price, quantity, location, and promo code. See `SAMPLE_RUNS.md`
 ## Running the tests
 Run `mvn test`. The screenshot is at `docs/test-results.png`.
 
+## Customer data
+`src/main/resources/customers.csv` stores one customer per line using the
+`id,name,email,street,city,state,country,postalCode` columns. This simple
+comma-separated format does not support quoted fields, so values (including
+street addresses) must not contain commas.
+
 ## Domain model (Week 2)
 The `com.flexisa.model` package models an e-commerce order system. The code is in `src/main/java/com/flexisa/model/` and the tests are in `src/test/java/com/flexisa/model/`.
 

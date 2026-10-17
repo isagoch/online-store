@@ -6,6 +6,8 @@ These are the choices I made while building the domain model for the online stor
 
 - **Address and OrderItem are records.** Neither one changes after it is created, and neither needs its own identity. Two addresses with the same details are just the same address. A record fits because it is immutable and Java generates the accessors for me.
 - **Product and Customer are classes.** They are real things with an identity. A product's stock goes up and down over time, so it needs to be a class.
+- **Customer equality uses `id`.** The system-assigned id is immutable, so two Customer objects with the same id represent the same record even when their names or email addresses differ.
+- **Order equality uses only `id`.** Orders can change status and items, so including mutable state in `equals` or `hashCode` could make an order unreachable in a hash-based collection after it changes.
 - **Order, Payment and Delivery are classes.** Each one moves through different states, and I wanted methods with rules to control those moves.
 - **OrderStatus, PaymentStatus and DeliveryStatus are enums.** The possible states are fixed and known, so an enum stops anyone from using a status that doesn't exist.
 
