@@ -92,6 +92,72 @@ class SalesAnalyserTest {
     }
 
     @Test
+    void calculateAverageOrderValue_withSampleData_returnsAverageForUniqueNonCancelledOrders() {
+        assertEquals(134_050.0, createAnalyser().calculateAverageOrderValue());
+    }
+
+    @Test
+    void calculateAverageOrderValue_withNoOrders_returnsZero() {
+        SalesAnalyser analyser = new SalesAnalyser(List.of(), List.of());
+
+        assertEquals(0.0, analyser.calculateAverageOrderValue());
+    }
+
+    @Test
+    void calculateAverageOrderValue_withOnlyCancelledOrders_returnsZero() {
+        Customer customer = loadCustomers().get(0);
+        Product product = new Product("P100", "Test Product", 250.0, 1);
+        Order cancelledOrder = new Order("CANCELLED", customer);
+        cancelledOrder.addItem(new OrderItem(product, 2));
+        cancelledOrder.cancel();
+        SalesAnalyser analyser = new SalesAnalyser(List.of(product), List.of(cancelledOrder));
+
+        assertEquals(0.0, analyser.calculateAverageOrderValue());
+    }
+
+    @Test
+    void calculateAverageOrderValue_withHandBuiltOrders_returnsMeanItemTotal() {
+        Customer customer = loadCustomers().get(0);
+        Product firstProduct = new Product("P100", "First Product", 10_000.0, 2);
+        Product secondProduct = new Product("P101", "Second Product", 3_000.0, 4);
+        Order firstOrder = new Order("FIRST", customer);
+        firstOrder.addItem(new OrderItem(firstProduct, 2));
+        Order secondOrder = new Order("SECOND", customer);
+        secondOrder.addItem(new OrderItem(secondProduct, 4));
+        SalesAnalyser analyser = new SalesAnalyser(
+                List.of(firstProduct, secondProduct), List.of(firstOrder, secondOrder));
+
+        assertEquals(16_000.0, analyser.calculateAverageOrderValue());
+    }
+
+    @Test
+    void calculateAverageOrderValue_countsEmptyOrderAsZeroValueOrder() {
+        Customer customer = loadCustomers().get(0);
+        Product product = new Product("P100", "Test Product", 20_000.0, 1);
+        Order valuedOrder = new Order("VALUED", customer);
+        valuedOrder.addItem(new OrderItem(product, 1));
+        Order emptyOrder = new Order("EMPTY", customer);
+        SalesAnalyser analyser = new SalesAnalyser(
+                List.of(product), List.of(valuedOrder, emptyOrder));
+
+        assertEquals(10_000.0, analyser.calculateAverageOrderValue());
+    }
+
+    @Test
+    void calculateAverageOrderValue_withDuplicateOrderId_countsOnlyFirstOrder() {
+        Customer customer = loadCustomers().get(0);
+        Product product = new Product("P100", "Test Product", 250.0, 5);
+        Order firstOrder = new Order("DUPLICATE", customer);
+        firstOrder.addItem(new OrderItem(product, 2));
+        Order duplicateOrder = new Order("DUPLICATE", customer);
+        duplicateOrder.addItem(new OrderItem(product, 5));
+        SalesAnalyser analyser = new SalesAnalyser(
+                List.of(product), List.of(firstOrder, duplicateOrder));
+
+        assertEquals(500.0, analyser.calculateAverageOrderValue());
+    }
+
+    @Test
     void searchProducts_withPartialMatch_returnsMechanicalKeyboards() {
         List<Product> matches = createAnalyser().searchProducts("key");
 
