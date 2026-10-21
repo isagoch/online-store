@@ -1,5 +1,6 @@
 package com.flexisa.service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -107,6 +108,39 @@ public class SalesAnalyser {
                 .sorted(salesOrder)
                 .limit(limit)
                 .toList();
+    }
+
+    public String buildSalesSummary(int topProductsLimit) {
+        List<Order> uniqueOrders = uniqueOrders();
+        List<Order> qualifyingOrders = salesOrders();
+        int duplicateRecords = orders.size() - uniqueOrders.size();
+        int cancelledOrders = uniqueOrders.size() - qualifyingOrders.size();
+        List<ProductSales> bestSellingProducts = findBestSellingProducts(topProductsLimit);
+
+        List<String> lines = new ArrayList<>();
+        lines.add(String.format(
+                Locale.ROOT,
+                "Orders analysed: %d (%d records excluded: %d duplicate, %d cancelled)",
+                qualifyingOrders.size(),
+                duplicateRecords + cancelledOrders,
+                duplicateRecords,
+                cancelledOrders));
+        lines.add(String.format(Locale.ROOT, "Total sales: #%.2f", calculateTotalSales()));
+        lines.add(String.format(
+                Locale.ROOT, "Average order value: #%.2f", calculateAverageOrderValue()));
+        lines.add(String.format(Locale.ROOT, "Top %d products by units sold:", topProductsLimit));
+        if (bestSellingProducts.isEmpty()) {
+            lines.add("No products sold");
+        } else {
+            bestSellingProducts.forEach(sales -> lines.add(String.format(
+                    Locale.ROOT,
+                    "%s %s (%d %s)",
+                    sales.product().getId(),
+                    sales.product().getName(),
+                    sales.unitsSold(),
+                    sales.unitsSold() == 1 ? "unit" : "units")));
+        }
+        return String.join("\n", lines);
     }
 
     public List<Product> sortProductsByPrice() {
