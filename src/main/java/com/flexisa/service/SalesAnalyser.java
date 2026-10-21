@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.flexisa.model.Order;
+import com.flexisa.model.OrderItem;
 import com.flexisa.model.OrderStatus;
 import com.flexisa.model.Product;
 
@@ -85,6 +86,27 @@ public class SalesAnalyser {
                 .mapToDouble(Order::calculateTotal)
                 .average()
                 .orElse(0.0);
+    }
+
+    public List<ProductSales> findBestSellingProducts(int limit) {
+        if (limit <= 0) {
+            throw new IllegalArgumentException("Limit must be greater than zero");
+        }
+
+        Comparator<ProductSales> salesOrder = Comparator
+                .comparingInt(ProductSales::unitsSold)
+                .reversed()
+                .thenComparing(sales -> sales.product().getId());
+        return salesOrders().stream()
+                .flatMap(order -> order.getItems().stream())
+                .collect(Collectors.groupingBy(
+                        OrderItem::product,
+                        Collectors.summingInt(OrderItem::quantity)))
+                .entrySet().stream()
+                .map(entry -> new ProductSales(entry.getKey(), entry.getValue()))
+                .sorted(salesOrder)
+                .limit(limit)
+                .toList();
     }
 
     public List<Product> sortProductsByPrice() {
