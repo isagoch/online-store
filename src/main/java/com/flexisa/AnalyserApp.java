@@ -11,6 +11,7 @@ import com.flexisa.data.ProductParser;
 import com.flexisa.data.SampleOrders;
 import com.flexisa.model.Customer;
 import com.flexisa.model.Order;
+import com.flexisa.model.OrderStatus;
 import com.flexisa.model.Product;
 import com.flexisa.service.SalesAnalyser;
 
@@ -54,6 +55,9 @@ public final class AnalyserApp {
                         System.out.print("Enter order keyword: ");
                         printOrders(analyser.searchOrders(scanner.nextLine()));
                     }
+                    case "3" -> filterByStatus(scanner, analyser);
+                    case "4" -> filterByCustomer(scanner, analyser);
+                    case "5" -> filterByTotalRange(scanner, analyser);
                     case "9" -> System.out.println(analyser.buildSalesSummary(3));
                     case "0" -> running = false;
                     default -> System.out.println("Unknown option: " + choice);
@@ -64,11 +68,40 @@ public final class AnalyserApp {
         }
     }
 
+    private static void filterByStatus(Scanner scanner, SalesAnalyser analyser) {
+        System.out.print("Enter order status: ");
+        String text = scanner.nextLine().trim();
+        OrderStatus status;
+        try {
+            status = OrderStatus.valueOf(text.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unknown status: " + text);
+        }
+        printOrders(analyser.filterOrdersByStatus(status));
+    }
+
+    private static void filterByCustomer(Scanner scanner, SalesAnalyser analyser) {
+        System.out.print("Enter customer ID: ");
+        String customerId = scanner.nextLine().trim();
+        printOrders(analyser.filterOrdersByCustomerId(customerId));
+    }
+
+    private static void filterByTotalRange(Scanner scanner, SalesAnalyser analyser) {
+        System.out.print("Enter minimum total: ");
+        double min = Double.parseDouble(scanner.nextLine().trim());
+        System.out.print("Enter maximum total: ");
+        double max = Double.parseDouble(scanner.nextLine().trim());
+        printOrders(analyser.filterOrdersByTotalRange(min, max));
+    }
+
     private static void printMenu() {
         System.out.println();
         System.out.println("Sales Analyser");
         System.out.println("1. Search products");
         System.out.println("2. Search orders");
+        System.out.println("3. Filter orders by status");
+        System.out.println("4. Filter orders by customer");
+        System.out.println("5. Filter orders by total range");
         System.out.println("9. Sales summary");
         System.out.println("0. Exit");
         System.out.print("Choose an option: ");
