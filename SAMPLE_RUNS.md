@@ -68,3 +68,23 @@ Promo code: FLEXISA15
 ```
 Input Error: Please input quantity greater than zero
 ```
+
+## Week 5: AnalyserApp
+
+Run with:
+
+```powershell
+mvn clean compile
+java -cp target/classes com.flexisa.AnalyserApp
+```
+
+Output:
+
+```text
+(paste the output here with Ctrl+V)
+```
+
+Notes:
+
+- Error line numbers count data lines after the header, so "Line 11" for products is the 11th data row.
+- "Products loaded: 10" includes the duplicate P003. Deduplication happens in the analyser.
