@@ -235,6 +235,60 @@ class SalesAnalyserTest {
     }
 
     @Test
+    void buildSalesSummary_withSampleData_returnsExpectedReport() {
+        String expected = String.join("\n",
+                "Orders analysed: 10 (3 records excluded: 1 duplicate, 2 cancelled)",
+                "Total sales: #1340500.00",
+                "Average order value: #134050.00",
+                "Top 3 products by units sold:",
+                "P002 Wireless Mouse (10 units)",
+                "P006 Desk Lamp (4 units)",
+                "P003 Mechanical Keyboard (3 units)");
+
+        assertEquals(expected, createAnalyser().buildSalesSummary(3));
+    }
+
+    @Test
+    void buildSalesSummary_withNoOrders_returnsZeroValuesAndNoProductsMessage() {
+        SalesAnalyser analyser = new SalesAnalyser(List.of(), List.of());
+        String expected = String.join("\n",
+                "Orders analysed: 0 (0 records excluded: 0 duplicate, 0 cancelled)",
+                "Total sales: #0.00",
+                "Average order value: #0.00",
+                "Top 3 products by units sold:",
+                "No products sold");
+
+        assertEquals(expected, analyser.buildSalesSummary(3));
+    }
+
+    @Test
+    void buildSalesSummary_withNonPositiveLimit_throwsIllegalArgumentException() {
+        SalesAnalyser analyser = createAnalyser();
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> analyser.buildSalesSummary(0));
+
+        assertEquals("Limit must be greater than zero", exception.getMessage());
+    }
+
+    @Test
+    void buildSalesSummary_withHandBuiltOrder_reportsExpectedValues() {
+        Customer customer = loadCustomers().get(0);
+        Product product = new Product("P100", "Test Product", 20_000.0, 1);
+        Order order = new Order("ORDER", customer);
+        order.addItem(new OrderItem(product, 1));
+        SalesAnalyser analyser = new SalesAnalyser(List.of(product), List.of(order));
+        String expected = String.join("\n",
+                "Orders analysed: 1 (0 records excluded: 0 duplicate, 0 cancelled)",
+                "Total sales: #20000.00",
+                "Average order value: #20000.00",
+                "Top 1 products by units sold:",
+                "P100 Test Product (1 unit)");
+
+        assertEquals(expected, analyser.buildSalesSummary(1));
+    }
+
+    @Test
     void searchProducts_withPartialMatch_returnsMechanicalKeyboards() {
         List<Product> matches = createAnalyser().searchProducts("key");
 
