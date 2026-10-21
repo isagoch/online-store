@@ -80,9 +80,21 @@ java -cp target/classes com.flexisa.AnalyserApp
 
 Output:
 
-```text
-(paste the output here with Ctrl+V)
-```
+Products loaded: 10
+Line 11: Price must be greater than zero
+Line 12: For input string: "abc"
+Line 13: Invalid product line: P012,Notebook,2500
+Customers loaded: 8
+Line 9: Customer name must not be blank
+Line 10: Email is incorrect
+Line 11: Invalid customer line: C010,Lola Adeyemi,lola.adeyemi@example.com,4 Osborne Road,Lagos,Lagos,Nigeria
+Orders analysed: 10 (3 records excluded: 1 duplicate, 2 cancelled)
+Total sales: #1340500.00
+Average order value: #134050.00
+Top 3 products by units sold:
+P002 Wireless Mouse (10 units)
+P006 Desk Lamp (4 units)
+P003 Mechanical Keyboard (3 units)
 
 Notes:
 
