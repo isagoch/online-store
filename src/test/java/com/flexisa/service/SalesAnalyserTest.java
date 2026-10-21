@@ -14,6 +14,7 @@ import com.flexisa.data.ProductParser;
 import com.flexisa.data.SampleOrders;
 import com.flexisa.model.Customer;
 import com.flexisa.model.Order;
+import com.flexisa.model.OrderItem;
 import com.flexisa.model.OrderStatus;
 import com.flexisa.model.Product;
 
@@ -35,6 +36,59 @@ class SalesAnalyserTest {
         List<Product> products = loadProducts();
         List<Order> orders = SampleOrders.create(loadCustomers(), products);
         return new SalesAnalyser(products, orders);
+    }
+
+    @Test
+    void calculateTotalSales_withSampleData_sumsUniqueNonCancelledItemTotals() {
+        assertEquals(1_340_500.0, createAnalyser().calculateTotalSales());
+    }
+
+    @Test
+    void calculateTotalSales_withNoOrders_returnsZero() {
+        SalesAnalyser analyser = new SalesAnalyser(List.of(), List.of());
+
+        assertEquals(0.0, analyser.calculateTotalSales());
+    }
+
+    @Test
+    void calculateTotalSales_withOnlyCancelledOrders_returnsZero() {
+        Customer customer = loadCustomers().get(0);
+        Product product = new Product("P100", "Test Product", 250.0, 1);
+        Order cancelledOrder = new Order("CANCELLED", customer);
+        cancelledOrder.addItem(new OrderItem(product, 2));
+        cancelledOrder.cancel();
+        SalesAnalyser analyser = new SalesAnalyser(List.of(product), List.of(cancelledOrder));
+
+        assertEquals(0.0, analyser.calculateTotalSales());
+    }
+
+    @Test
+    void calculateTotalSales_withHandBuiltOrders_sumsTheirItemTotals() {
+        Customer customer = loadCustomers().get(0);
+        Product firstProduct = new Product("P100", "First Product", 10_000.0, 2);
+        Product secondProduct = new Product("P101", "Second Product", 3_000.0, 4);
+        Order firstOrder = new Order("FIRST", customer);
+        firstOrder.addItem(new OrderItem(firstProduct, 2));
+        Order secondOrder = new Order("SECOND", customer);
+        secondOrder.addItem(new OrderItem(secondProduct, 4));
+        SalesAnalyser analyser = new SalesAnalyser(
+                List.of(firstProduct, secondProduct), List.of(firstOrder, secondOrder));
+
+        assertEquals(32_000.0, analyser.calculateTotalSales());
+    }
+
+    @Test
+    void calculateTotalSales_withDuplicateOrderId_countsOnlyFirstOrder() {
+        Customer customer = loadCustomers().get(0);
+        Product product = new Product("P100", "Test Product", 250.0, 2);
+        Order firstOrder = new Order("DUPLICATE", customer);
+        firstOrder.addItem(new OrderItem(product, 2));
+        Order duplicateOrder = new Order("DUPLICATE", customer);
+        duplicateOrder.addItem(new OrderItem(product, 5));
+        SalesAnalyser analyser = new SalesAnalyser(
+                List.of(product), List.of(firstOrder, duplicateOrder));
+
+        assertEquals(500.0, analyser.calculateTotalSales());
     }
 
     @Test
