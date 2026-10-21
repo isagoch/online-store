@@ -74,6 +74,13 @@ public class SalesAnalyser {
                 .toList();
     }
 
+    public double calculateTotalSales() {
+        return uniqueOrders().stream()
+                .filter(order -> order.getStatus() != OrderStatus.CANCELLED)
+                .mapToDouble(Order::calculateTotal)
+                .sum();
+    }
+
     public List<Product> sortProductsByPrice() {
         return products.stream()
                 .sorted(Comparator.comparingDouble(Product::getPrice))
