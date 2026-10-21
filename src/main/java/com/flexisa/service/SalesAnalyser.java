@@ -75,10 +75,16 @@ public class SalesAnalyser {
     }
 
     public double calculateTotalSales() {
-        return uniqueOrders().stream()
-                .filter(order -> order.getStatus() != OrderStatus.CANCELLED)
+        return salesOrders().stream()
                 .mapToDouble(Order::calculateTotal)
                 .sum();
+    }
+
+    public double calculateAverageOrderValue() {
+        return salesOrders().stream()
+                .mapToDouble(Order::calculateTotal)
+                .average()
+                .orElse(0.0);
     }
 
     public List<Product> sortProductsByPrice() {
@@ -136,6 +142,12 @@ public class SalesAnalyser {
 
     private List<Order> uniqueOrders() {
         return removeDuplicateOrders();
+    }
+
+    private List<Order> salesOrders() {
+        return uniqueOrders().stream()
+                .filter(order -> order.getStatus() != OrderStatus.CANCELLED)
+                .toList();
     }
 
     private static String normalizeKeyword(String keyword) {
