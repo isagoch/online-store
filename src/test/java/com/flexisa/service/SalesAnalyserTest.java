@@ -158,6 +158,83 @@ class SalesAnalyserTest {
     }
 
     @Test
+    void findBestSellingProducts_withLimitThree_returnsTopProductsByUnits() {
+        List<ProductSales> bestSelling = createAnalyser().findBestSellingProducts(3);
+
+        assertEquals(List.of("P002", "P006", "P003"),
+                bestSelling.stream().map(sales -> sales.product().getId()).toList());
+        assertEquals(List.of(10, 4, 3),
+                bestSelling.stream().map(ProductSales::unitsSold).toList());
+    }
+
+    @Test
+    void findBestSellingProducts_withLimitFive_breaksUnitTiesByProductId() {
+        List<ProductSales> bestSelling = createAnalyser().findBestSellingProducts(5);
+
+        assertEquals(List.of("P002", "P006", "P003", "P007", "P008"),
+                bestSelling.stream().map(sales -> sales.product().getId()).toList());
+        assertEquals(List.of(10, 4, 3, 3, 3),
+                bestSelling.stream().map(ProductSales::unitsSold).toList());
+    }
+
+    @Test
+    void findBestSellingProducts_withLimitAboveSoldProductCount_returnsAllProducts() {
+        List<ProductSales> bestSelling = createAnalyser().findBestSellingProducts(20);
+
+        assertEquals(9, bestSelling.size());
+        assertEquals(28, bestSelling.stream().mapToInt(ProductSales::unitsSold).sum());
+    }
+
+    @Test
+    void findBestSellingProducts_withNoOrders_returnsEmptyList() {
+        SalesAnalyser analyser = new SalesAnalyser(List.of(), List.of());
+
+        assertEquals(List.of(), analyser.findBestSellingProducts(3));
+    }
+
+    @Test
+    void findBestSellingProducts_excludesProductSoldOnlyInCancelledOrder() {
+        Customer customer = loadCustomers().get(0);
+        Product cancelledProduct = new Product("CANCELLED-PRODUCT", "Cancelled Product", 250.0, 1);
+        Order cancelledOrder = new Order("CANCELLED", customer);
+        cancelledOrder.addItem(new OrderItem(cancelledProduct, 1));
+        cancelledOrder.cancel();
+        SalesAnalyser analyser = new SalesAnalyser(
+                List.of(cancelledProduct), List.of(cancelledOrder));
+
+        assertEquals(List.of(), analyser.findBestSellingProducts(3));
+    }
+
+    @Test
+    void findBestSellingProducts_withDuplicateOrderId_countsOnlyFirstOrder() {
+        Customer customer = loadCustomers().get(0);
+        Product product = new Product("P100", "Test Product", 250.0, 5);
+        Order firstOrder = new Order("DUPLICATE", customer);
+        firstOrder.addItem(new OrderItem(product, 2));
+        Order duplicateOrder = new Order("DUPLICATE", customer);
+        duplicateOrder.addItem(new OrderItem(product, 5));
+        SalesAnalyser analyser = new SalesAnalyser(
+                List.of(product), List.of(firstOrder, duplicateOrder));
+
+        assertEquals(List.of(2), analyser.findBestSellingProducts(3).stream()
+                .map(ProductSales::unitsSold)
+                .toList());
+    }
+
+    @Test
+    void findBestSellingProducts_withNonPositiveLimit_throwsIllegalArgumentException() {
+        SalesAnalyser analyser = createAnalyser();
+
+        IllegalArgumentException zeroLimitException = assertThrows(
+                IllegalArgumentException.class, () -> analyser.findBestSellingProducts(0));
+        IllegalArgumentException negativeLimitException = assertThrows(
+                IllegalArgumentException.class, () -> analyser.findBestSellingProducts(-1));
+
+        assertEquals("Limit must be greater than zero", zeroLimitException.getMessage());
+        assertEquals("Limit must be greater than zero", negativeLimitException.getMessage());
+    }
+
+    @Test
     void searchProducts_withPartialMatch_returnsMechanicalKeyboards() {
         List<Product> matches = createAnalyser().searchProducts("key");
 
