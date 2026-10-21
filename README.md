@@ -108,3 +108,68 @@ The `com.flexisa.model` package models an e-commerce order system. The code is i
   connected to `PricingService`.
 - The model cleanup (repeated checks and style slips in `Customer`, `Order` and
   `Product`) is future work.
+
+## Sales analysis
+- Run `com.flexisa.AnalyserApp` to load the sample data, report rejected records,
+  and print the sales summary. The original `App` remains the Week 1–3 price
+  calculator.
+- Grouping and sales calculations use deduplicated orders, keeping the first
+  occurrence of each order ID. Cancelled orders are excluded from total sales;
+  sales figures are plain item totals, with no discounts, delivery, or tax.
+  Average order value uses the same qualifying orders, counts orders with no
+  items as value 0, and returns 0.0 when there are no qualifying orders.
+  Best-selling products use the same qualifying orders and rank by units sold,
+  with ties broken by product ID in ascending order. The requested limit must
+  be positive. A limit of 3 includes P003 but excludes P007 and P008, which tie
+  at 3 units; the cutoff follows the ID tie-break, not a difference in sales.
+  The sales summary reports qualifying orders and excluded duplicate and
+  cancelled records; with no orders, it shows zero values and `No products
+  sold`. Searches and filters continue to show raw records.
+- Order groups are created only for statuses or customers that have orders.
+  An absent group can be read with `groups.getOrDefault(key, List.of())`.
+- Grouping returns a map because callers look up all orders for a status or
+  customer ID directly by key; map keys retain the order in which they first
+  appear in the dataset.
+
+  ## Collections, generics and data processing (Week 4)
+
+### Setup and usage
+- Java 21 and Maven. Run `mvn clean test` to run all the tests.
+- To run the analyser: `mvn clean compile`, then `java -cp target/classes com.flexisa.AnalyserApp`.
+- The menu has these options: 1 search products, 2 search orders, 3 filter orders by status, 4 filter orders by customer, 5 filter orders by total range, 9 sales summary, 0 exit.
+- Sorting, duplicate removal and grouping are done and tested in `SalesAnalyser`, but they are not in the menu yet.
+- Bad input prints `Input Error: ...` and goes back to the menu.
+- `SAMPLE_RUNS.md` has sample runs.
+
+### Sample data
+- `products.csv` and `customers.csv` are in `src/main/resources`. They have duplicates and invalid lines on purpose, so i can test those cases.
+- Orders are built in Java (`SampleOrders`). An order always starts PENDING, so it has to be moved through its steps and can't just be written in a file.
+- The loader reports each rejected line with its line number. The numbers count data lines after the header.
+- "Loaded" counts include duplicates, because duplicates are removed later in the analyser.
+
+### Collections
+- I used a `List`, a `Set` and a `Map`. See `docs/collection-selection.md` for why.
+- Best sellers use a `Map` from product to units sold.
+
+### Generic method
+`DataLoader.parseAll` and `LoadResult<T>` work for any type. I use them for both products and customers.
+
+### Design decisions
+- Date filtering is skipped because `Order` has no date field.
+- Two records are the same if they have the same id. The first one is kept.
+- Search and filters show raw records, so duplicates still show. Grouping and sales figures use unique orders only.
+- Order value means the plain item total from `calculateTotal()`. Filters don't remove cancelled orders.
+- Total range bounds are inclusive. A negative bound is accepted and works like 0, because totals are never negative.
+- A null or blank search keyword is rejected instead of returning everything.
+- Sorting is ascending only, with one method each for price, name and stock.
+- `Locale.ROOT` is used for matching and money formatting, so results are the same on every machine.
+- The CSV format has no quoted commas, so values can't contain commas.
+- I made a separate `AnalyserApp` so the old `App` stays the same.
+
+### Testing
+There are 173 tests. They cover empty collections, duplicates, invalid records, missing search results, and minimum and maximum values.
+
+### Known limitations
+- Money uses `double`, like the earlier weeks.
+- Sales figures leave out discounts, delivery and tax, because `Order` still doesn't use `PricingService`.
+- If piped input ends in the middle of a menu question, the menu can crash. A person typing can't cause this.

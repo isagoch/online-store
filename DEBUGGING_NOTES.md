@@ -51,3 +51,36 @@ So i copied the original four println lines back unchanged. A refactor should no
 ## Note 6 ##
 PricingService imported the discount and shipping packages, and those two packages imported PricingContext from the service package. That means the packages depended on each other in a circle.
 I fixed it by moving PricingContext into the model package, so the dependencies now only go one way, towards model.
+
+# Debugging Notes - Week 4
+## Note 1 ##
+When formatting money in the sales summary, using String.format without a locale could print a comma instead of a decimal point on machines with different default locales.
+I used Locale.ROOT with String.format so the report consistently shows two decimal places with a period.
+
+## Note 2 ##
+The sales analyser tests and console entry point both load product and customer resources with DataLoader and their parsers.
+I kept the small amount of loading code in both places rather than introducing a shared loader abstraction just for this step.
+
+## Note 3 ##
+My first test used a HashSet with two Product objects that had the same id, name and price. I guessed equals() would be true, but it printed false and the set size was 2.
+This is because Java's default equals() compares object identity, not the values inside.
+So i wrote equals() and hashCode() using the id only. I left stock out of hashCode because it changes, and a changed hash would stop the set from finding the product.
+
+## Note 4 ##
+My scratch test failed with "cannot find symbol" for Set and HashSet.
+The cause was that VS Code deleted my imports on save, because nothing used them yet.
+So i wrote the code first and added the imports after.
+
+## Note 5 ##
+I wrote assertNotEquals(null, product) to test equals(null), but it never called my equals method, so the test proved nothing.
+So i changed it to assertFalse(product.equals(null)), which really calls the method.
+
+## Note 6 ##
+VS Code showed a yellow warning on my assertThrows lines, saying the method result was ignored.
+The cause was that assertThrows returns the exception and i was not using it.
+So i saved the exception and checked its message. That made the tests stronger too.
+
+## Note 7 ##
+My scripted menu test printed "Unknown option: [INFO]" many times.
+I had typed mvn clean compile and the inputs on one line. Maven read the inputs as part of its command and failed, and the pipe sent Maven's error text into my program as menu choices.
+So i ran compile and the program as two separate commands.
