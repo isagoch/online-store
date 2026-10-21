@@ -35,27 +35,31 @@ public final class AnalyserApp {
         SalesAnalyser analyser = new SalesAnalyser(
                 products, SampleOrders.create(customers, products));
         try (Scanner scanner = new Scanner(System.in)) {
-            boolean running = true;
-            while (running && scanner.hasNextLine()) {
-                printMenu();
-                String choice = scanner.nextLine().trim();
-                try {
-                    switch (choice) {
-                        case "1" -> {
-                            System.out.print("Enter product keyword: ");
-                            printProducts(analyser.searchProducts(scanner.nextLine()));
-                        }
-                        case "2" -> {
-                            System.out.print("Enter order keyword: ");
-                            printOrders(analyser.searchOrders(scanner.nextLine()));
-                        }
-                        case "9" -> System.out.println(analyser.buildSalesSummary(3));
-                        case "0" -> running = false;
-                        default -> System.out.println("Unknown option: " + choice);
+            runMenu(scanner, analyser);
+        }
+    }
+
+    private static void runMenu(Scanner scanner, SalesAnalyser analyser) {
+        boolean running = true;
+        while (running && scanner.hasNextLine()) {
+            printMenu();
+            String choice = scanner.nextLine().trim();
+            try {
+                switch (choice) {
+                    case "1" -> {
+                        System.out.print("Enter product keyword: ");
+                        printProducts(analyser.searchProducts(scanner.nextLine()));
                     }
-                } catch (IllegalArgumentException exception) {
-                    System.out.println("Input Error: " + exception.getMessage());
+                    case "2" -> {
+                        System.out.print("Enter order keyword: ");
+                        printOrders(analyser.searchOrders(scanner.nextLine()));
+                    }
+                    case "9" -> System.out.println(analyser.buildSalesSummary(3));
+                    case "0" -> running = false;
+                    default -> System.out.println("Unknown option: " + choice);
                 }
+            } catch (IllegalArgumentException exception) {
+                System.out.println("Input Error: " + exception.getMessage());
             }
         }
     }
