@@ -84,3 +84,14 @@ So i saved the exception and checked its message. That made the tests stronger t
 My scripted menu test printed "Unknown option: [INFO]" many times.
 I had typed mvn clean compile and the inputs on one line. Maven read the inputs as part of its command and failed, and the pipe sent Maven's error text into my program as menu choices.
 So i ran compile and the program as two separate commands.
+
+# Debugging Notes - Week 5
+
+### Note 1
+- Before debugging, I predicted that quantity would be 5 and stockQuantity would be 5, and that the condition would be true.
+- What I actually saw:  both were 5 and the >= condition was true, so it jumped to the throw.
+- What I learned: a boundary test (exactly equal to the limit) catches mistakes that normal failure tests miss.
+
+### Note 2
+- I noticed that logging the exception object prints its stack trace. For a missing file, the exception message contains the full path, which has my Windows username.
+- I wrote a test that captures the log records and checks the path is not there. Then I changed the log to print only the exception class name.
