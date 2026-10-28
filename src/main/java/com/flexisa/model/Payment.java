@@ -1,5 +1,7 @@
 package com.flexisa.model;
 
+import com.flexisa.exception.InvalidPaymentStateException;
+
 public class Payment {
     private final String id;
     private final Order order;
@@ -26,21 +28,21 @@ public class Payment {
 
     public void complete() {
         if (status != PaymentStatus.PENDING) {
-            throw new IllegalStateException("Payment can only be completed when its status is PENDING");
+            throw new InvalidPaymentStateException("Payment can only be completed when its status is PENDING");
         }
         status = PaymentStatus.COMPLETED;
     }
 
     public void fail() {
         if (status != PaymentStatus.PENDING) {
-            throw new IllegalStateException("Payment can only be failed when its status is PENDING");
+            throw new InvalidPaymentStateException("Payment can only be failed when its status is PENDING");
         }
         status = PaymentStatus.FAILED;
     }
 
     public void refund() {
         if (status != PaymentStatus.COMPLETED) {
-            throw new IllegalStateException("Payment can only be refunded when its status is COMPLETED");
+            throw new InvalidPaymentStateException("Payment can only be refunded when its status is COMPLETED");
         }
         status = PaymentStatus.REFUNDED;
     }
