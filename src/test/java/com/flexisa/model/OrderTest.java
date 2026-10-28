@@ -157,6 +157,18 @@ public class OrderTest {
     }
 
     @Test
+    void startProcessing_EmptyOrder_ThrowsInvalidOrderStateException() {
+        Order order = new Order("order-1", customer);
+
+        InvalidOrderStateException exception = assertThrows(
+                InvalidOrderStateException.class,
+                order::startProcessing);
+
+        assertEquals("Order must contain at least one item before processing", exception.getMessage());
+        assertEquals(OrderStatus.PENDING, order.getStatus());
+    }
+
+    @Test
     void equals_SameId_ReturnsTrue() {
         Customer otherCustomer = new Customer(
                 "2400245",
