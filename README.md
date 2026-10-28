@@ -175,3 +175,49 @@ There are 173 tests. They cover empty collections, duplicates, invalid records, 
 - Money uses `double`, like the earlier weeks.
 - Sales figures leave out discounts, delivery and tax, because `Order` still doesn't use `PricingService`.
 - If piped input ends in the middle of a menu question, the menu can crash. A person typing can't cause this.
+
+
+## Failure behaviour and logging (Week 5)
+
+### What I did
+In Week 5 I made common failures predictable and recorded them safely. I added custom exceptions, a file reader that uses try-with-resources, logging, more tests, and a debugger investigation of one defect.
+
+### Custom exceptions
+| Exception | Type | Used for |
+|---|---|---|
+| `InvalidOrderStateException` | extends `IllegalStateException` | Wrong order state changes (add item, start processing, ship, deliver, cancel) |
+| `InsufficientStockException` | extends `IllegalStateException` | Reducing stock by more than is available |
+| `InvalidPaymentStateException` | extends `IllegalStateException` | Wrong payment state changes (complete, fail, refund) |
+| `OrderNotFoundException` | extends `IllegalArgumentException` | Looking up an order ID that does not exist |
+| `DataFileException` | checked (extends `Exception`) | A file that cannot be read |
+
+The custom exceptions extend the built-in ones and keep the exact same messages. This means the old tests and catch blocks still work. In Week 3 I avoided custom exceptions because they could change behaviour the tests lock in. In Week 5 this design removes that risk.
+
+### Checked vs unchecked
+- Bad input and forbidden state changes are unchecked, because they are mistakes by the caller.
+- File failures are checked (`DataFileException`), because a file can be missing or unreadable even when the code is correct, so the caller must handle it. The original `IOException` is kept as the cause.
+- `OrderNotFoundException` extends `IllegalArgumentException`, so the menu prints it as `Input Error: ...` with no changes.
+
+### How failures are handled
+- **Invalid input:** `IllegalArgumentException`, with the same messages as before.
+- **Missing records:** `SalesAnalyser.findOrderById` throws `OrderNotFoundException`. A null or blank ID throws `IllegalArgumentException`. If an ID is duplicated, the first match is returned. The lookup is exact (no trimming, no case change).
+- **Duplicate operations:** completing a payment twice, shipping an order twice, or cancelling an order twice is rejected, and the status stays the same.
+- **Invalid state changes:** rejected with the custom state exceptions.
+- **File failures:** `DataLoader.readFileLines(Path)` uses try-with-resources and throws `DataFileException`. `readResourceLines` was not changed in behaviour.
+
+### Logging
+- I used `java.util.logging`. It is configured in `src/main/resources/logging.properties` and loaded at the start of `AnalyserApp`.
+- Levels: `FINE` is debug, then `INFO`, `WARNING` and `SEVERE` (error).
+- Expected failures like a missing order ID log at `WARNING`. Failed file reads log at `SEVERE`. Normal events like finishing a file read or starting the analyser log at `INFO`. Starting a file read logs at `FINE`.
+- **Safe logging:** only IDs, file names and counts are logged. I do not log names, emails, addresses, payment details or full file paths.
+- Logs show the exception class name but not its message or stack trace. I found that I/O exception messages contain the full path, which includes my Windows username. A test captures the log records and checks that the full path is not there.
+- Known limitation: invalid CSV lines are printed to the console (not logged) by the loader, and they can include customer data.
+
+### Defect investigation
+I deliberately changed `reduceStock` from `quantity > stockQuantity` to `quantity >= stockQuantity`. The existing boundary test `reduceStock_QuantityEqualToStock_ReducesStockToZero` failed. I investigated it with the VS Code debugger (breakpoint, Watch expressions and step controls) and then fixed it. See `docs/defect-report.md`, `DEBUGGING_NOTES.md` and the screenshots in `docs/debugging/`.
+
+### Testing and evidence
+- There are 188 tests, and 15 of them are new in Week 5. They cover successful operations, expected failures and boundary cases.
+- Run the tests with `mvn clean test`.
+- The coverage report (JaCoCo) is created at `target/site/jacoco/index.html`. A screenshot is saved at `docs/coverage-report.png`.
+- Sample log output (with no sensitive data) is in `docs/sample-log-output.txt`.
