@@ -1,0 +1,6 @@
+Personal data was removed from this output.
+
+INFO: Analyser started: products=10, orders=13
+SEVERE: Failed to read file: missing.csv; cause: NoSuchFileException
+INFO: Finished reading file: valid.csv; lines read: 2
+WARNING: Order lookup failed: id=O999
