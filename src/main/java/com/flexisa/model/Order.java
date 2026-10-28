@@ -1,5 +1,7 @@
 package com.flexisa.model;
 
+import com.flexisa.exception.InvalidOrderStateException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,37 +30,37 @@ public class Order {
             throw new IllegalArgumentException("Order item must not be null");
         }
         if (status != OrderStatus.PENDING) {
-            throw new IllegalStateException("Items can only be added to a PENDING order");
+            throw new InvalidOrderStateException("Items can only be added to a PENDING order");
         }
         this.items.add(item);
     }
 
     public void startProcessing() {
         if (status != OrderStatus.PENDING) {
-            throw new IllegalStateException("Order can only start processing when its status is PENDING");
+            throw new InvalidOrderStateException("Order can only start processing when its status is PENDING");
         }
         if (items.isEmpty()) {
-            throw new IllegalStateException("Order must contain at least one item before processing");
+            throw new InvalidOrderStateException("Order must contain at least one item before processing");
         }
         status = OrderStatus.PROCESSING;
     }
 
     public void ship() {
         if (status != OrderStatus.PROCESSING) {
-            throw new IllegalStateException("Order can only be shipped when its status is PROCESSING");
+            throw new InvalidOrderStateException("Order can only be shipped when its status is PROCESSING");
         }
         status = OrderStatus.SHIPPED;
     }
     public void deliver() {
         if (status != OrderStatus.SHIPPED) {
-            throw new IllegalStateException("Order can only be delivered when its status is SHIPPED");
+            throw new InvalidOrderStateException("Order can only be delivered when its status is SHIPPED");
         }
         status = OrderStatus.DELIVERED;
     }
     public void cancel() {
         boolean canCancel = status == OrderStatus.PENDING || status == OrderStatus.PROCESSING;
         if (!canCancel) {
-            throw new IllegalStateException("Only PENDING or PROCESSING orders can be cancelled");
+            throw new InvalidOrderStateException("Only PENDING or PROCESSING orders can be cancelled");
         }
         status = OrderStatus.CANCELLED;
     }
