@@ -5,6 +5,8 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +14,7 @@ import com.flexisa.data.CustomerParser;
 import com.flexisa.data.DataLoader;
 import com.flexisa.data.ProductParser;
 import com.flexisa.data.SampleOrders;
+import com.flexisa.exception.OrderNotFoundException;
 import com.flexisa.model.Customer;
 import com.flexisa.model.Order;
 import com.flexisa.model.OrderItem;
@@ -374,6 +377,47 @@ class SalesAnalyserTest {
 
         assertEquals("Search keyword must not be null or blank", nullException.getMessage());
         assertEquals("Search keyword must not be null or blank", blankException.getMessage());
+    }
+
+    @Test
+    void findOrderById_ExistingId_ReturnsOrder() {
+        SalesAnalyser analyser = createAnalyser();
+        Order expected = analyser.searchOrders("O001").get(0);
+
+        assertSame(expected, analyser.findOrderById("O001"));
+    }
+
+    @Test
+    void findOrderById_DuplicatedId_ReturnsFirstMatch() {
+        SalesAnalyser analyser = createAnalyser();
+        List<Order> duplicates = analyser.searchOrders("O007");
+
+        assertNotSame(duplicates.get(0), duplicates.get(1));
+        assertSame(duplicates.get(0), analyser.findOrderById("O007"));
+    }
+
+    @Test
+    void findOrderById_BlankId_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> createAnalyser().findOrderById("  "));
+
+        assertEquals("Order ID must not be blank", exception.getMessage());
+    }
+
+    @Test
+    void findOrderById_NullId_ThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> createAnalyser().findOrderById(null));
+
+        assertEquals("Order ID must not be blank", exception.getMessage());
+    }
+
+    @Test
+    void findOrderById_UnknownId_ThrowsOrderNotFoundException() {
+        OrderNotFoundException exception = assertThrows(OrderNotFoundException.class,
+                () -> createAnalyser().findOrderById("O999"));
+
+        assertEquals("Order not found: O999", exception.getMessage());
     }
 
     @Test
