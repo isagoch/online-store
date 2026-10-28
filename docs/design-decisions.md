@@ -33,3 +33,6 @@ These are the choices I made while building the domain model for the online stor
 - **PaymentStatus.PROCESSING is not used yet.** I kept Payment small for this task, but I left the value in the enum in case a future step needs it.
 - **A payment's amount is not compared to the order total.** I only check that it is positive, to keep the model simple.
 - **Order does not reduce product stock yet.** I left that for a later step.
+
+## Week 5: checked vs unchecked exceptions
+State and input errors are unchecked, because they are caller mistakes and the old tests rely on that. File reading is checked (`DataFileException`), because a missing or unreadable file can happen even when the code is right, so the caller should be forced to handle it. The original `IOException` is kept as the cause.
