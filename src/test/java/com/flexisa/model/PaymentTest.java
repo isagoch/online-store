@@ -1,5 +1,7 @@
 package com.flexisa.model;
 
+import com.flexisa.exception.InvalidPaymentStateException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -20,6 +22,19 @@ public class PaymentTest {
     void completeMovesPendingToCompleted() {
         payment.complete();
 
+        assertEquals(PaymentStatus.COMPLETED, payment.getStatus());
+    }
+
+    @Test
+    void complete_AlreadyCompleted_ThrowsInvalidPaymentStateException() {
+        payment.complete();
+
+        InvalidPaymentStateException exception = assertThrows(
+                InvalidPaymentStateException.class,
+                payment::complete
+        );
+
+        assertEquals("Payment can only be completed when its status is PENDING", exception.getMessage());
         assertEquals(PaymentStatus.COMPLETED, payment.getStatus());
     }
 
