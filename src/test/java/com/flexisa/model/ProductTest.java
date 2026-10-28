@@ -5,6 +5,7 @@ import com.flexisa.exception.InsufficientStockException;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -81,6 +82,15 @@ public class ProductTest {
 
         assertEquals("Insufficient stock to reduce by 6", exception.getMessage());
         assertEquals(5, product.getStockQuantity());
+    }
+
+    @Test
+    public void reduceStock_QuantityEqualToStock_ReducesStockToZero() {
+        Product product = new Product("P001", "Laptop", 999.99, 5);
+
+        assertDoesNotThrow(() -> product.reduceStock(5));
+
+        assertEquals(0, product.getStockQuantity());
     }
 
     @Test
