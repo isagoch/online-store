@@ -48,7 +48,8 @@ public final class DataLoader {
             LOGGER.info("Finished reading file: " + path.getFileName() + "; lines read: " + lines.size());
             return lines;
         } catch (IOException exception) {
-            LOGGER.log(Level.SEVERE, "Failed to read file: " + path.getFileName(), exception);
+            LOGGER.log(Level.SEVERE, "Failed to read file: " + path.getFileName()
+                    + "; cause: " + exception.getClass().getSimpleName());
             throw new DataFileException(
                     "Failed to read file: " + path.getFileName(),
                     exception);
