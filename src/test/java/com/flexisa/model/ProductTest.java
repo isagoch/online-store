@@ -1,4 +1,7 @@
 package com.flexisa.model;
+
+import com.flexisa.exception.InsufficientStockException;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -66,6 +69,18 @@ public class ProductTest {
             product.reduceStock(15)
         );
         assertEquals("Insufficient stock to reduce by 15", exception.getMessage());
+    }
+
+    @Test
+    public void reduceStock_QuantityAboveStock_ThrowsInsufficientStockException() {
+        Product product = new Product("P001", "Laptop", 999.99, 5);
+
+        InsufficientStockException exception = assertThrows(InsufficientStockException.class, () ->
+            product.reduceStock(6)
+        );
+
+        assertEquals("Insufficient stock to reduce by 6", exception.getMessage());
+        assertEquals(5, product.getStockQuantity());
     }
 
     @Test
