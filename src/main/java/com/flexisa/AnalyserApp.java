@@ -1,8 +1,12 @@
 package com.flexisa;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import com.flexisa.data.CustomerParser;
 import com.flexisa.data.DataLoader;
@@ -17,10 +21,20 @@ import com.flexisa.service.SalesAnalyser;
 
 public final class AnalyserApp {
 
+    private static final Logger LOGGER = Logger.getLogger(AnalyserApp.class.getName());
+
     private AnalyserApp() {
     }
 
     public static void main(String[] args) {
+        try (InputStream in = AnalyserApp.class.getResourceAsStream("/logging.properties")) {
+            if (in != null) {
+                LogManager.getLogManager().readConfiguration(in);
+            }
+        } catch (IOException e) {
+            System.err.println("Could not load logging configuration");
+        }
+
         LoadResult<Product> productResult = DataLoader.parseAll(
                 DataLoader.readResourceLines("products.csv"),
                 ProductParser::parseLine);
@@ -33,8 +47,10 @@ public final class AnalyserApp {
         List<Customer> customers = customerResult.valid();
         printLoadResult("Customers", customerResult);
 
+        List<Order> orders = SampleOrders.create(customers, products);
         SalesAnalyser analyser = new SalesAnalyser(
-                products, SampleOrders.create(customers, products));
+                products, orders);
+        LOGGER.info("Analyser started: products=" + products.size() + ", orders=" + orders.size());
         try (Scanner scanner = new Scanner(System.in)) {
             runMenu(scanner, analyser);
         }
