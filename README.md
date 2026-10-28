@@ -157,6 +157,7 @@ The `com.flexisa.model` package models an e-commerce order system. The code is i
 ### Design decisions
 - Date filtering is skipped because `Order` has no date field.
 - Two records are the same if they have the same id. The first one is kept.
+- `findOrderById` returns the first matching order when an ID occurs more than once.
 - Search and filters show raw records, so duplicates still show. Grouping and sales figures use unique orders only.
 - Order value means the plain item total from `calculateTotal()`. Filters don't remove cancelled orders.
 - Total range bounds are inclusive. A negative bound is accepted and works like 0, because totals are never negative.
