@@ -1,16 +1,59 @@
 package com.flexisa.data;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import com.flexisa.exception.DataFileException;
 import com.flexisa.model.Customer;
 import com.flexisa.model.Product;
 
 class DataLoaderTest {
+
+    @TempDir
+    private Path tempDir;
+
+    @Test
+    void readFileLines_ValidFile_SkipsHeaderAndBlankLines() throws DataFileException, IOException {
+        Path file = tempDir.resolve("valid.csv");
+        Files.writeString(file, "id,name\nA,1\n\nB,2\n");
+
+        assertEquals(List.of("A,1", "B,2"), DataLoader.readFileLines(file));
+    }
+
+    @Test
+    void readFileLines_HeaderOnlyFile_ReturnsEmptyList() throws DataFileException, IOException {
+        Path file = tempDir.resolve("header-only.csv");
+        Files.writeString(file, "id,name\n");
+
+        assertTrue(DataLoader.readFileLines(file).isEmpty());
+    }
+
+    @Test
+    void readFileLines_MissingFile_ThrowsDataFileException() throws DataFileException {
+        DataFileException exception = assertThrows(
+                DataFileException.class,
+                () -> DataLoader.readFileLines(tempDir.resolve("missing.csv")));
+
+        assertEquals("Failed to read file: missing.csv", exception.getMessage());
+        assertTrue(exception.getCause() instanceof NoSuchFileException);
+    }
+
+    @Test
+    void readFileLines_NullPath_ThrowsIllegalArgumentException() throws DataFileException {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> DataLoader.readFileLines(null));
+
+        assertEquals("Path must not be null", exception.getMessage());
+    }
 
     @Test
     void readResourceLines_skipsHeaderAndBlankLines() {
