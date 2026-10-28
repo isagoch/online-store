@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.flexisa.exception.OrderNotFoundException;
@@ -18,6 +19,8 @@ import com.flexisa.model.OrderStatus;
 import com.flexisa.model.Product;
 
 public class SalesAnalyser {
+
+    private static final Logger LOGGER = Logger.getLogger(SalesAnalyser.class.getName());
 
     private final List<Product> products;
     private final List<Order> orders;
@@ -51,6 +54,7 @@ public class SalesAnalyser {
                 return order;
             }
         }
+        LOGGER.warning("Order lookup failed: id=" + id);
         throw new OrderNotFoundException("Order not found: " + id);
     }
 
