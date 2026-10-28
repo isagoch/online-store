@@ -145,6 +145,7 @@ The `com.flexisa.model` package models an e-commerce order system. The code is i
 - `products.csv` and `customers.csv` are in `src/main/resources`. They have duplicates and invalid lines on purpose, so i can test those cases.
 - Orders are built in Java (`SampleOrders`). An order always starts PENDING, so it has to be moved through its steps and can't just be written in a file.
 - The loader reports each rejected line with its line number. The numbers count data lines after the header.
+- `DataLoader.readFileLines(Path)` reports file read failures as checked `DataFileException`s. Its log includes only the file name and exception class, not the stack trace, to avoid exposing the full path; the caller still receives the original I/O exception as the cause.
 - "Loaded" counts include duplicates, because duplicates are removed later in the analyser.
 
 ### Collections
