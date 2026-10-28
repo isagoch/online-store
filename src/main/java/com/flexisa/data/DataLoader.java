@@ -11,10 +11,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.flexisa.exception.DataFileException;
 
 public final class DataLoader {
+
+    private static final Logger LOGGER = Logger.getLogger(DataLoader.class.getName());
 
     private DataLoader() {
     }
@@ -38,9 +42,13 @@ public final class DataLoader {
             throw new IllegalArgumentException("Path must not be null");
         }
 
+        LOGGER.fine("Starting read of file: " + path.getFileName());
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-            return readDataLines(reader);
+            List<String> lines = readDataLines(reader);
+            LOGGER.info("Finished reading file: " + path.getFileName() + "; lines read: " + lines.size());
+            return lines;
         } catch (IOException exception) {
+            LOGGER.log(Level.SEVERE, "Failed to read file: " + path.getFileName(), exception);
             throw new DataFileException(
                     "Failed to read file: " + path.getFileName(),
                     exception);
