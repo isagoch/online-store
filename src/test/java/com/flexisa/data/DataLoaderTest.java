@@ -4,9 +4,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -45,6 +51,41 @@ class DataLoaderTest {
 
         assertEquals("Failed to read file: missing.csv", exception.getMessage());
         assertTrue(exception.getCause() instanceof NoSuchFileException);
+    }
+
+    @Test
+    void readFileLines_MissingFile_LogDoesNotContainFullPath() throws DataFileException {
+        Logger logger = Logger.getLogger(DataLoader.class.getName());
+        List<LogRecord> records = new ArrayList<>();
+        Handler handler = new Handler() {
+            @Override
+            public void publish(LogRecord record) {
+                records.add(record);
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        };
+        logger.addHandler(handler);
+        try {
+            DataFileException exception = assertThrows(
+                    DataFileException.class,
+                    () -> DataLoader.readFileLines(tempDir.resolve("missing.csv")));
+            assertEquals("Failed to read file: missing.csv", exception.getMessage());
+        } finally {
+            logger.removeHandler(handler);
+        }
+
+        assertFalse(records.isEmpty());
+        LogRecord record = records.get(0);
+        assertTrue(record.getMessage().contains("missing.csv"));
+        assertFalse(record.getMessage().contains(tempDir.toString()));
+        assertNull(record.getThrown());
     }
 
     @Test
