@@ -49,7 +49,7 @@ public class Product {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity to reduce must be positive");
         }
-        if (quantity > stockQuantity) {
+        if (quantity >= stockQuantity) {
             throw new InsufficientStockException("Insufficient stock to reduce by " + quantity);
         }
         this.stockQuantity -= quantity;
