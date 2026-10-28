@@ -1,5 +1,7 @@
 package com.flexisa.model;
 
+import com.flexisa.exception.InsufficientStockException;
+
 public class Product {
     private final String id;
     private final String name;
@@ -48,7 +50,7 @@ public class Product {
             throw new IllegalArgumentException("Quantity to reduce must be positive");
         }
         if (quantity > stockQuantity) {
-            throw new IllegalStateException("Insufficient stock to reduce by " + quantity);
+            throw new InsufficientStockException("Insufficient stock to reduce by " + quantity);
         }
         this.stockQuantity -= quantity;
     }
@@ -76,4 +78,3 @@ public class Product {
     }
 
 }
-
