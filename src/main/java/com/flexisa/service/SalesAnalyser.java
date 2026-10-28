@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.flexisa.exception.OrderNotFoundException;
 import com.flexisa.model.Order;
 import com.flexisa.model.OrderItem;
 import com.flexisa.model.OrderStatus;
@@ -39,6 +40,18 @@ public class SalesAnalyser {
                 .filter(order -> containsIgnoreCase(order.getId(), normalizedKeyword)
                         || containsIgnoreCase(order.getCustomer().getName(), normalizedKeyword))
                 .toList();
+    }
+
+    public Order findOrderById(String id) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("Order ID must not be blank");
+        }
+        for (Order order : orders) {
+            if (order.getId().equals(id)) {
+                return order;
+            }
+        }
+        throw new OrderNotFoundException("Order not found: " + id);
     }
 
     public List<Order> filterOrdersByStatus(OrderStatus status) {
