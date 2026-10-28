@@ -3,6 +3,8 @@ package com.flexisa.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.flexisa.exception.InvalidOrderStateException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -84,14 +86,27 @@ public class OrderTest {
     }
 
     @Test
-    void cancelIsRejectedWhenAlreadyCancelled() {
+    void cancel_AlreadyCancelled_ThrowsInvalidOrderStateException() {
         Order order = new Order("order-1", customer);
         order.cancel();
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class, order::cancel);
+        InvalidOrderStateException exception = assertThrows(InvalidOrderStateException.class, order::cancel);
 
         assertEquals("Only PENDING or PROCESSING orders can be cancelled", exception.getMessage());
         assertEquals(OrderStatus.CANCELLED, order.getStatus());
+    }
+
+    @Test
+    void ship_AlreadyShipped_ThrowsInvalidOrderStateException() {
+        Order order = new Order("order-1", customer);
+        order.addItem(new OrderItem(product, 1));
+        order.startProcessing();
+        order.ship();
+
+        InvalidOrderStateException exception = assertThrows(InvalidOrderStateException.class, order::ship);
+
+        assertEquals("Order can only be shipped when its status is PROCESSING", exception.getMessage());
+        assertEquals(OrderStatus.SHIPPED, order.getStatus());
     }
 
     @Test
