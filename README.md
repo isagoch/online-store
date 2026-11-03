@@ -221,3 +221,75 @@ I deliberately changed `reduceStock` from `quantity > stockQuantity` to `quantit
 - Run the tests with `mvn clean test`.
 - The coverage report (JaCoCo) is created at `target/site/jacoco/index.html`. A screenshot is saved at `docs/coverage-report.png`.
 - Sample log output (with no sensitive data) is in `docs/sample-log-output.txt`.
+
+## Week 6: Configurable Order Importer and JSON Report Exporter
+
+Imports order records from a CSV file, validates them, separates accepted and
+rejected rows, totals the accepted orders and writes JSON reports.
+
+### Setup
+1. Copy `config/importer.properties.template` to `config/importer.properties`
+   (this real file is git-ignored) and edit the values, or set environment variables.
+2. Environment variables override the properties file:
+
+| Setting | Environment variable | Properties key |
+|---|---|---|
+| Input CSV file | `FLEXISA_INPUT_FILE` | `input.file` |
+| Output folder | `FLEXISA_OUTPUT_DIR` | `output.dir` |
+
+See `.env.example` for an example. A missing setting or input file produces a clear
+error message and exit code 1.
+
+### Run
+```
+copy config\importer.properties.template config\importer.properties
+mvn compile exec:java -Dexec.mainClass=com.flexisa.importer.ImportApp
+```
+Expected output: `Accepted: 20, Rejected: 7, Total: 1032500.00`.
+The app runs through Maven because Jackson must be on the classpath.
+Tests: `mvn clean test`.
+
+### CSV format
+Header: `orderId,customerId,productId,quantity,unitPrice,orderDate,orderTimestamp,status`
+
+| Column | Rule |
+|---|---|
+| orderId | required, unique in the file (first occurrence wins) |
+| customerId, productId | required |
+| quantity | whole number, at least 1 |
+| unitPrice | number, greater than 0 |
+| orderDate | `yyyy-MM-dd` |
+| orderTimestamp | `yyyy-MM-ddTHH:mm:ss` |
+| status | PENDING, PROCESSING, SHIPPED, DELIVERED or CANCELLED (case-insensitive) |
+
+Sample file: `data/sample-orders.csv` (27 data rows: 20 valid, 7 deliberately invalid).
+
+### Output files (in the output folder)
+- `import-report.json`: processing timestamp, input file name, counts, total amount,
+  accepted orders (with per-order total) and rejected records with reasons.
+- `rejected-records.json`: line number, order ID and reason for each rejected row.
+
+Generated examples are committed in `output/`.
+
+### Design decisions
+1. New `com.flexisa.importer` package. `Order` is untouched because existing tests depend on it.
+2. Money stays `double` for consistency with earlier weeks (known limitation).
+3. `LocalDateTime` is used because all orders are Lagos-local, so no timezone conversion is needed.
+4. Duplicate order IDs: the first occurrence is accepted, later ones are rejected.
+5. Cancelled orders are valid records and count in the accepted total.
+6. Environment variables override the properties file. The real config is git-ignored.
+7. `ImportConfig.load` takes a `Map`, so tests can fake the environment.
+8. Rejection reasons are fixed messages, so a rejected row never echoes raw data.
+9. Blank lines are skipped, a zero-line file is an error, and a header-only file is a valid empty import.
+10. Reports contain the input file name only, never a full path.
+11. The processing timestamp is passed in, so it can be tested.
+12. `ImportApp` prints counts and the total only.
+
+### Known limitations
+- The CSV parser does not support quoted commas.
+- Order IDs are case-sensitive.
+- The header row is skipped but not checked.
+- An invalid path character throws the unchecked `InvalidPathException`.
+- If the rejected file fails to write after the full report succeeds, the output folder is left partial.
+- `ImportApp.main` and `System.exit` are not covered by tests.
+- Order IDs and other values are not checked against existing customers or products.

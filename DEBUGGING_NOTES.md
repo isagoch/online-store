@@ -87,11 +87,34 @@ So i ran compile and the program as two separate commands.
 
 # Debugging Notes - Week 5
 
-### Note 1
+## Note 1
 - Before debugging, I predicted that quantity would be 5 and stockQuantity would be 5, and that the condition would be true.
 - What I actually saw:  both were 5 and the >= condition was true, so it jumped to the throw.
 - What I learned: a boundary test (exactly equal to the limit) catches mistakes that normal failure tests miss.
 
-### Note 2
+## Note 2
 - I noticed that logging the exception object prints its stack trace. For a missing file, the exception message contains the full path, which has my Windows username.
 - I wrote a test that captures the log records and checks the path is not there. Then I changed the log to print only the exception class name.
+
+# Debugging Notes - Week 6
+
+## Note 1
+ VS Code showed red lines on the Jackson imports while Maven passed. The language
+   server had not loaded the new dependencies. Fix: Java: Clean Java Language Server Workspace.
+
+## Note 2
+@TempDir fields cannot be private in JUnit 5. Removed `private`.
+
+## Note 3
+Path.getFileName() returns null for a root path. I called it before the file check,
+   so I added a fallback name.
+
+## Note 4
+ConfigurationException and the new DataFileException constructor stayed uncommitted
+   while earlier commits already used them, so those commits do not compile on their own.
+   I noticed it from git status and fixed it with follow-up commits, without rewriting history.
+
+## Note 5
+Two commit messages understated their contents (the parser commit also included
+   ImportConfig, the test commit included five test files). I now check git status
+   and list everything a commit contains.
