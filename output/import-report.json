@@ -1,0 +1,237 @@
+{
+  "processedAt" : "2026-11-03T15:33:02",
+  "inputFile" : "sample-orders.csv",
+  "acceptedCount" : 20,
+  "rejectedCount" : 7,
+  "totalAmount" : 1032500.0,
+  "acceptedOrders" : [ {
+    "orderId" : "O1001",
+    "customerId" : "C001",
+    "productId" : "P001",
+    "quantity" : 2,
+    "unitPrice" : 15000.0,
+    "orderDate" : "2025-03-01",
+    "orderTimestamp" : "2025-03-01T09:15:00",
+    "status" : "PENDING",
+    "total" : 30000.0
+  }, {
+    "orderId" : "O1002",
+    "customerId" : "C002",
+    "productId" : "P002",
+    "quantity" : 1,
+    "unitPrice" : 45000.0,
+    "orderDate" : "2025-03-01",
+    "orderTimestamp" : "2025-03-01T10:30:00",
+    "status" : "PROCESSING",
+    "total" : 45000.0
+  }, {
+    "orderId" : "O1003",
+    "customerId" : "C003",
+    "productId" : "P003",
+    "quantity" : 5,
+    "unitPrice" : 2000.0,
+    "orderDate" : "2025-03-02",
+    "orderTimestamp" : "2025-03-02T11:00:00",
+    "status" : "SHIPPED",
+    "total" : 10000.0
+  }, {
+    "orderId" : "O1004",
+    "customerId" : "C001",
+    "productId" : "P004",
+    "quantity" : 3,
+    "unitPrice" : 12000.0,
+    "orderDate" : "2025-03-02",
+    "orderTimestamp" : "2025-03-02T14:45:00",
+    "status" : "DELIVERED",
+    "total" : 36000.0
+  }, {
+    "orderId" : "O1005",
+    "customerId" : "C004",
+    "productId" : "P001",
+    "quantity" : 10,
+    "unitPrice" : 15000.0,
+    "orderDate" : "2025-03-03",
+    "orderTimestamp" : "2025-03-03T08:20:00",
+    "status" : "PENDING",
+    "total" : 150000.0
+  }, {
+    "orderId" : "O1006",
+    "customerId" : "C005",
+    "productId" : "P005",
+    "quantity" : 1,
+    "unitPrice" : 80000.0,
+    "orderDate" : "2025-03-03",
+    "orderTimestamp" : "2025-03-03T16:05:00",
+    "status" : "PROCESSING",
+    "total" : 80000.0
+  }, {
+    "orderId" : "O1007",
+    "customerId" : "C002",
+    "productId" : "P003",
+    "quantity" : 4,
+    "unitPrice" : 2000.0,
+    "orderDate" : "2025-03-04",
+    "orderTimestamp" : "2025-03-04T09:00:00",
+    "status" : "CANCELLED",
+    "total" : 8000.0
+  }, {
+    "orderId" : "O1008",
+    "customerId" : "C006",
+    "productId" : "P002",
+    "quantity" : 2,
+    "unitPrice" : 45000.0,
+    "orderDate" : "2025-03-04",
+    "orderTimestamp" : "2025-03-04T12:10:00",
+    "status" : "SHIPPED",
+    "total" : 90000.0
+  }, {
+    "orderId" : "O1009",
+    "customerId" : "C007",
+    "productId" : "P006",
+    "quantity" : 6,
+    "unitPrice" : 7500.0,
+    "orderDate" : "2025-03-05",
+    "orderTimestamp" : "2025-03-05T13:30:00",
+    "status" : "DELIVERED",
+    "total" : 45000.0
+  }, {
+    "orderId" : "O1010",
+    "customerId" : "C003",
+    "productId" : "P004",
+    "quantity" : 1,
+    "unitPrice" : 12000.0,
+    "orderDate" : "2025-03-05",
+    "orderTimestamp" : "2025-03-05T15:55:00",
+    "status" : "PENDING",
+    "total" : 12000.0
+  }, {
+    "orderId" : "O1011",
+    "customerId" : "C008",
+    "productId" : "P005",
+    "quantity" : 2,
+    "unitPrice" : 80000.0,
+    "orderDate" : "2025-03-06",
+    "orderTimestamp" : "2025-03-06T10:40:00",
+    "status" : "PROCESSING",
+    "total" : 160000.0
+  }, {
+    "orderId" : "O1012",
+    "customerId" : "C004",
+    "productId" : "P006",
+    "quantity" : 8,
+    "unitPrice" : 7500.0,
+    "orderDate" : "2025-03-06",
+    "orderTimestamp" : "2025-03-06T11:25:00",
+    "status" : "SHIPPED",
+    "total" : 60000.0
+  }, {
+    "orderId" : "O1013",
+    "customerId" : "C009",
+    "productId" : "P001",
+    "quantity" : 1,
+    "unitPrice" : 15000.0,
+    "orderDate" : "2025-03-07",
+    "orderTimestamp" : "2025-03-07T09:50:00",
+    "status" : "DELIVERED",
+    "total" : 15000.0
+  }, {
+    "orderId" : "O1014",
+    "customerId" : "C010",
+    "productId" : "P003",
+    "quantity" : 20,
+    "unitPrice" : 2000.0,
+    "orderDate" : "2025-03-07",
+    "orderTimestamp" : "2025-03-07T17:10:00",
+    "status" : "PENDING",
+    "total" : 40000.0
+  }, {
+    "orderId" : "O1015",
+    "customerId" : "C005",
+    "productId" : "P002",
+    "quantity" : 1,
+    "unitPrice" : 45000.0,
+    "orderDate" : "2025-03-08",
+    "orderTimestamp" : "2025-03-08T08:35:00",
+    "status" : "CANCELLED",
+    "total" : 45000.0
+  }, {
+    "orderId" : "O1016",
+    "customerId" : "C006",
+    "productId" : "P004",
+    "quantity" : 2,
+    "unitPrice" : 12000.0,
+    "orderDate" : "2025-03-08",
+    "orderTimestamp" : "2025-03-08T12:00:00",
+    "status" : "PROCESSING",
+    "total" : 24000.0
+  }, {
+    "orderId" : "O1017",
+    "customerId" : "C007",
+    "productId" : "P005",
+    "quantity" : 1,
+    "unitPrice" : 80000.0,
+    "orderDate" : "2025-03-09",
+    "orderTimestamp" : "2025-03-09T14:20:00",
+    "status" : "SHIPPED",
+    "total" : 80000.0
+  }, {
+    "orderId" : "O1018",
+    "customerId" : "C011",
+    "productId" : "P006",
+    "quantity" : 3,
+    "unitPrice" : 7500.0,
+    "orderDate" : "2025-03-09",
+    "orderTimestamp" : "2025-03-09T16:45:00",
+    "status" : "DELIVERED",
+    "total" : 22500.0
+  }, {
+    "orderId" : "O1019",
+    "customerId" : "C012",
+    "productId" : "P001",
+    "quantity" : 4,
+    "unitPrice" : 15000.0,
+    "orderDate" : "2025-03-10",
+    "orderTimestamp" : "2025-03-10T10:05:00",
+    "status" : "PENDING",
+    "total" : 60000.0
+  }, {
+    "orderId" : "O1020",
+    "customerId" : "C008",
+    "productId" : "P003",
+    "quantity" : 10,
+    "unitPrice" : 2000.0,
+    "orderDate" : "2025-03-10",
+    "orderTimestamp" : "2025-03-10T13:15:00",
+    "status" : "PROCESSING",
+    "total" : 20000.0
+  } ],
+  "rejectedRecords" : [ {
+    "lineNumber" : 22,
+    "orderId" : "O1021",
+    "reason" : "Invalid order date"
+  }, {
+    "lineNumber" : 23,
+    "orderId" : "O1022",
+    "reason" : "Missing required field: quantity"
+  }, {
+    "lineNumber" : 24,
+    "orderId" : "O1023",
+    "reason" : "Quantity must be at least 1"
+  }, {
+    "lineNumber" : 25,
+    "orderId" : "O1024",
+    "reason" : "Invalid status"
+  }, {
+    "lineNumber" : 26,
+    "orderId" : "O1001",
+    "reason" : "Duplicate order ID"
+  }, {
+    "lineNumber" : 27,
+    "orderId" : "O1026",
+    "reason" : "Price is not a number"
+  }, {
+    "lineNumber" : 28,
+    "orderId" : "O1027",
+    "reason" : "Invalid order timestamp"
+  } ]
+}

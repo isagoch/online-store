@@ -1,0 +1,29 @@
+[ {
+  "lineNumber" : 22,
+  "orderId" : "O1021",
+  "reason" : "Invalid order date"
+}, {
+  "lineNumber" : 23,
+  "orderId" : "O1022",
+  "reason" : "Missing required field: quantity"
+}, {
+  "lineNumber" : 24,
+  "orderId" : "O1023",
+  "reason" : "Quantity must be at least 1"
+}, {
+  "lineNumber" : 25,
+  "orderId" : "O1024",
+  "reason" : "Invalid status"
+}, {
+  "lineNumber" : 26,
+  "orderId" : "O1001",
+  "reason" : "Duplicate order ID"
+}, {
+  "lineNumber" : 27,
+  "orderId" : "O1026",
+  "reason" : "Price is not a number"
+}, {
+  "lineNumber" : 28,
+  "orderId" : "O1027",
+  "reason" : "Invalid order timestamp"
+} ]
