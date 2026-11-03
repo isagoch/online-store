@@ -1,0 +1,4 @@
+# Copy this file to config/importer.properties and edit the values.
+# Environment variables FLEXISA_INPUT_FILE and FLEXISA_OUTPUT_DIR override these.
+input.file=data/sample-orders.csv
+output.dir=output
