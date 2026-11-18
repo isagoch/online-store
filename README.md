@@ -293,3 +293,21 @@ Generated examples are committed in `output/`.
 - If the rejected file fails to write after the full report succeeds, the output folder is left partial.
 - `ImportApp.main` and `System.exit` are not covered by tests.
 - Order IDs and other values are not checked against existing customers or products.
+
+## Week 7: PostgreSQL and Relational Data Modelling
+
+Relational database for the e-commerce domain: 8 tables, with an ERD, schema, seed data, CRUD queries and constraint tests.
+
+**Files:** `db/schema.sql`, `db/seed.sql`, `db/crud.sql`, `db/invalid-ops.sql`, evidence in `db/*.txt`, plus `docs/erd.md`, `docs/normalisation-and-design.md` and `docs/ai-usage-log.md`.
+
+### Setup (Windows, PostgreSQL 18, Command Prompt)
+```
+set PATH=%PATH%;C:\Program Files\PostgreSQL\18\bin
+set PGPASSWORD=<your password, never commit it>
+psql -U postgres -c "CREATE DATABASE flexisa_store;"
+psql -U postgres -d flexisa_store -f db\schema.sql
+psql -U postgres -d flexisa_store -f db\seed.sql
+psql -U postgres -d flexisa_store -f db\crud.sql
+psql -U postgres -d flexisa_store -f db\invalid-ops.sql
+```
+Run `seed.sql` before `crud.sql`. Docker Compose was not used this week.
