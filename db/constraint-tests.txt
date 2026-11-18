@@ -1,0 +1,47 @@
+-- Constraint tests: each statement below must be REJECTED.
+-- 1. CHECK: negative price
+INSERT INTO products (product_id, name, price, stock_quantity)
+VALUES ('P010', 'Office Chair', -75000, 4);
+psql:db/invalid-ops.sql:5: ERROR:  new row for relation "products" violates check constraint "ck_product_price_positive"
+DETAIL:  Failing row contains (P010, Office Chair, -75000.00, 4, null).
+-- 2. PRIMARY KEY: duplicate customer ID
+INSERT INTO customers (customer_id, name, email)
+VALUES ('C003', 'Chika Nwosu', 'other@example.com');
+psql:db/invalid-ops.sql:9: ERROR:  duplicate key value violates unique constraint "customers_pkey"
+DETAIL:  Key (customer_id)=(C003) already exists.
+-- 3. CHECK: email without @
+INSERT INTO customers (customer_id, name, email)
+VALUES ('C009', 'Peter James', 'peter.james.example.com');
+psql:db/invalid-ops.sql:13: ERROR:  new row for relation "customers" violates check constraint "ck_customer_email_has_at"
+DETAIL:  Failing row contains (C009, Peter James, peter.james.example.com, 2026-11-18 18:39:08.02214).
+-- 4. CHECK: blank name
+INSERT INTO customers (customer_id, name, email)
+VALUES ('C010', '', 'blank.name@example.com');
+psql:db/invalid-ops.sql:17: ERROR:  new row for relation "customers" violates check constraint "ck_customer_name_not_blank"
+DETAIL:  Failing row contains (C010, , blank.name@example.com, 2026-11-18 18:39:08.022563).
+-- 5. NOT NULL: missing postal code
+INSERT INTO addresses (customer_id, street, city, state)
+VALUES ('C006', '4 Osborne Road', 'Lagos', 'Lagos');
+psql:db/invalid-ops.sql:21: ERROR:  null value in column "postal_code" of relation "addresses" violates not-null constraint
+DETAIL:  Failing row contains (10, C006, 4 Osborne Road, Lagos, Lagos, Nigeria, null, f).
+-- 6. FOREIGN KEY: order for a customer that does not exist
+INSERT INTO orders (order_id, customer_id) VALUES ('O9999', 'C999');
+psql:db/invalid-ops.sql:24: ERROR:  insert or update on table "orders" violates foreign key constraint "orders_customer_id_fkey"
+DETAIL:  Key (customer_id)=(C999) is not present in table "customers".
+-- 7. CHECK: invalid order status
+UPDATE orders SET status = 'SHIPPING_SOON' WHERE order_id = 'O1001';
+psql:db/invalid-ops.sql:27: ERROR:  new row for relation "orders" violates check constraint "ck_order_status"
+DETAIL:  Failing row contains (O1001, C001, SHIPPING_SOON, null, 2026-10-01 09:15:00).
+-- 8. UNIQUE: second delivery for the same order
+INSERT INTO deliveries (delivery_id, order_id, address_id, status)
+VALUES ('D004', 'O1001', 1, 'PENDING');
+psql:db/invalid-ops.sql:31: ERROR:  duplicate key value violates unique constraint "deliveries_order_id_key"
+DETAIL:  Key (order_id)=(O1001) already exists.
+-- 9. CHECK: negative stock
+UPDATE products SET stock_quantity = -1 WHERE product_id = 'P001';
+psql:db/invalid-ops.sql:34: ERROR:  new row for relation "products" violates check constraint "ck_product_stock_not_negative"
+DETAIL:  Failing row contains (P001, Laptop, 450000.00, -1, 1).
+-- 10. FOREIGN KEY: delete a customer who still has orders
+DELETE FROM customers WHERE customer_id = 'C004';
+psql:db/invalid-ops.sql:37: ERROR:  update or delete on table "customers" violates foreign key constraint "orders_customer_id_fkey" on table "orders"
+DETAIL:  Key (customer_id)=(C004) is still referenced from table "orders".
