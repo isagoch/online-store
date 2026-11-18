@@ -1,0 +1,12 @@
+      t      | count 
+-------------+-------
+ customers   |     7
+ addresses   |     8
+ categories  |     4
+ products    |     9
+ orders      |     6
+ order_items |    10
+ payments    |     5
+ deliveries  |     3
+(8 rows)
+
